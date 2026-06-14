@@ -64,7 +64,7 @@ const fallbackImages: GalleryImage[] = [
   {
     _id: "8",
     title: "Founder",
-    image: "/founder_SankarRana.jpeg",
+    image: "/founder_ShekharRana.jpeg",
     category: "Team",
   },
   {

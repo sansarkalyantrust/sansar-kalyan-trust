@@ -150,13 +150,13 @@ export function HomepageClient() {
             <ScaleIn delay={0.2}>
               <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
                 <Image
-                  src="/founder_SankarRana.jpeg"
-                  alt="Founder - Sankar Rana"
+                  src="/founder_ShekharRana.jpeg"
+                  alt="Founder -Dr. Shekhar Rana"
                   fill
                   className="object-cover"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                  <p className="text-white font-semibold">Sankar Rana</p>
+                  <p className="text-white font-semibold">Dr. Shekhar Rana</p>
                   <p className="text-white/80 text-sm">Founder, Sansar Kalyan Trust</p>
                 </div>
               </div>

@@ -57,10 +57,10 @@ const defaultSettings = [
 
 const defaultTestimonials = [
   {
-    name: 'Sankar Rana',
+    name: 'Dr. Shekhar Rana',
     designation: 'Founder, Sansar Kalyan Trust',
     message: 'Our mission is to create a lasting impact in the lives of those who need it most. Every small act of kindness can change the world.',
-    photo: '/founder_SankarRana.jpeg',
+    photo: '/founder_ShekharRana.jpeg',
     order: 1,
     isActive: true,
   },

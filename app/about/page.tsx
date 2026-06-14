@@ -90,7 +90,7 @@ export default function About() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
                 <img
-                  src="/founder_SankarRana.jpeg"
+                  src="/founder_ShekharRana.jpeg"
                   alt="Dr. Shekhar Rana, Founder & Chairman"
                   className="rounded-lg shadow-lg object-cover w-full h-96"
                 />
