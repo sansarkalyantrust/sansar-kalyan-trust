@@ -11,6 +11,7 @@ export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchEvents()
@@ -20,7 +21,7 @@ export default function EventsPage() {
     try {
       const response = await fetch('/api/events')
       const data = await response.json()
-      setEvents(data)
+      setEvents(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [])
     } catch (error) {
       console.error('Failed to fetch events:', error)
     } finally {
@@ -50,17 +51,22 @@ export default function EventsPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-foreground">Events</h1>
           <Button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              setShowForm(!showForm)
+              setEditingId(null)
+            }}
             className="bg-primary hover:bg-primary/90"
           >
             {showForm ? 'Cancel' : 'New Event'}
           </Button>
         </div>
 
-        {showForm && (
+        {(showForm || editingId) && (
           <EventForm
+            initialData={editingId ? events.find((e) => e.slug === editingId) : undefined}
             onSuccess={() => {
               setShowForm(false)
+              setEditingId(null)
               fetchEvents()
             }}
           />
@@ -87,6 +93,10 @@ export default function EventsPage() {
                     <Button
                       size="sm"
                       variant="ghost"
+                      onClick={() => {
+                        setEditingId(event.slug)
+                        setShowForm(true)
+                      }}
                       className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
                     >
                       <Edit2 className="h-4 w-4" />

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requireEditor } from "@/lib/api-auth";
 import { connectDB, isMongoConnected } from "@/lib/mongodb";
 import {
   Campaign,
@@ -9,9 +10,13 @@ import {
   Volunteer,
   Donation,
   Review,
+  PageView,
 } from "@/lib/models";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireEditor(request);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     if (!(await isMongoConnected())) {
       // Return mock data if MongoDB not connected
@@ -26,6 +31,7 @@ export async function GET() {
         totalDonationAmount: 0,
         totalDonors: 0,
         pendingReviews: 0,
+        totalVisitors: 0,
         recentTransactions: [],
         recentContacts: [],
       });
@@ -44,6 +50,7 @@ export async function GET() {
       totalDonationAmount,
       totalDonors,
       pendingReviews,
+      totalVisitorsResult,
     ] = await Promise.all([
       Campaign.countDocuments(),
       Event.countDocuments(),
@@ -61,7 +68,13 @@ export async function GET() {
         { $group: { _id: "$donorEmail" } },
       ]).then((result) => result.length),
       Review.countDocuments({ status: "pending" }),
+      PageView.aggregate([
+        { $group: { _id: "$sessionId" } },
+        { $count: "total" },
+      ]),
     ]);
+
+    const totalVisitors = totalVisitorsResult[0]?.total ?? 0;
 
     // Recent transactions
     const recentTransactions = await Donation.find()
@@ -86,6 +99,7 @@ export async function GET() {
       totalDonationAmount,
       totalDonors,
       pendingReviews,
+      totalVisitors,
       recentTransactions,
       recentContacts,
     });

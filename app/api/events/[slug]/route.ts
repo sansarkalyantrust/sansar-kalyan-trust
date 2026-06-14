@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor, requireAdminRole, canDelete } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Event } from '@/lib/models'
-import { eventUpdateSchema } from '@/lib/validations'
+import { logAudit } from '@/lib/services/audit.service'
+import { eventUpdateSchema, syncMediaFields } from '@/lib/validations'
 
 export async function GET(
   request: NextRequest,
@@ -30,6 +32,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const { slug } = await params
     const body = await request.json()
@@ -39,16 +44,19 @@ export async function PUT(
       return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 })
     }
 
+    const data = syncMediaFields(validation.data)
+
     const db = await connectDB()
     if (db) {
       const event = await Event.findOneAndUpdate(
         { slug },
-        { $set: validation.data },
+        { $set: data },
         { new: true }
       )
       if (!event) {
         return NextResponse.json({ error: 'Event not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'update', 'event', event._id.toString(), { slug })
       return NextResponse.json(event)
     }
 
@@ -63,6 +71,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireAdminRole(request)
+  if (auth instanceof NextResponse) return auth
+  if (!canDelete(auth.session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const { slug } = await params
     const db = await connectDB()
@@ -72,6 +86,7 @@ export async function DELETE(
       if (!event) {
         return NextResponse.json({ error: 'Event not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'delete', 'event', event._id.toString(), { slug })
       return NextResponse.json({ success: true, message: 'Event deleted' })
     }
 

@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Donation } from '@/lib/models'
+import { rateLimit } from '@/lib/rate-limit'
 import { donationSchema } from '@/lib/validations'
 
 const mockDonations: any[] = []
 
+function getClientIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown'
+}
+
 export async function GET(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const searchParams = request.nextUrl.searchParams
     const page = parseInt(searchParams.get('page') || '1')
@@ -52,6 +63,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request)
+    const limit = rateLimit(ip, { windowMs: 60 * 1000, max: 10 })
+    if (!limit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
+
     const body = await request.json()
 
     const validation = donationSchema.safeParse(body)

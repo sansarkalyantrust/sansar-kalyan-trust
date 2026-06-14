@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Edit, Trash2, Eye, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
 import Image from "next/image";
+import { AdminLayout } from "@/components/admin/admin-layout";
+import { MediaPicker } from "@/components/admin/media-picker";
+import type { CloudinaryAsset } from "@/lib/types/cloudinary-asset";
 
 interface Testimonial {
   _id: string;
@@ -11,6 +14,7 @@ interface Testimonial {
   designation: string;
   message: string;
   photo?: string;
+  photoAsset?: CloudinaryAsset;
   order: number;
   isActive: boolean;
 }
@@ -20,6 +24,7 @@ export default function AdminTestimonialsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [photoAsset, setPhotoAsset] = useState<CloudinaryAsset | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     designation: "",
@@ -60,7 +65,7 @@ export default function AdminTestimonialsPage() {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, photoAsset, photo: photoAsset?.secure_url || formData.photo }),
       });
 
       if (res.ok) {
@@ -74,6 +79,7 @@ export default function AdminTestimonialsPage() {
 
   const handleEdit = (testimonial: Testimonial) => {
     setEditingId(testimonial._id);
+    setPhotoAsset(testimonial.photoAsset || null);
     setFormData({
       name: testimonial.name,
       designation: testimonial.designation,
@@ -136,12 +142,14 @@ export default function AdminTestimonialsPage() {
   };
 
   const resetForm = () => {
+    setPhotoAsset(null);
     setFormData({ name: "", designation: "", message: "", photo: "", order: 0, isActive: true });
     setEditingId(null);
     setShowForm(false);
   };
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Testimonials Management</h1>
@@ -202,18 +210,7 @@ export default function AdminTestimonialsPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Photo URL (optional)
-              </label>
-              <input
-                type="text"
-                value={formData.photo}
-                onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary focus:border-primary"
-                placeholder="https://example.com/photo.jpg"
-              />
-            </div>
+            <MediaPicker folder="testimonials" label="Photo" value={photoAsset} onChange={setPhotoAsset} />
 
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -268,10 +265,10 @@ export default function AdminTestimonialsPage() {
               className="p-6 rounded-lg border bg-card"
             >
               <div className="flex items-start gap-4">
-                {testimonial.photo && (
+                {(testimonial.photoAsset?.secure_url || testimonial.photo) && (
                   <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
                     <Image
-                      src={testimonial.photo}
+                      src={testimonial.photoAsset?.secure_url || testimonial.photo!}
                       alt={testimonial.name}
                       fill
                       className="object-cover"
@@ -352,5 +349,6 @@ export default function AdminTestimonialsPage() {
         </motion.div>
       )}
     </div>
+    </AdminLayout>
   );
 }

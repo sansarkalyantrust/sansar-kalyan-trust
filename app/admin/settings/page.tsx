@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Save, RotateCcw } from "lucide-react";
+import { AdminLayout } from "@/components/admin/admin-layout";
 
 interface SettingsData {
   homepage?: {
@@ -146,14 +147,17 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
+      <AdminLayout>
       <div className="space-y-6">
         <div className="h-10 bg-muted rounded animate-pulse" />
         <div className="h-96 bg-muted rounded animate-pulse" />
       </div>
+      </AdminLayout>
     );
   }
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Site Settings</h1>
@@ -478,5 +482,6 @@ export default function AdminSettingsPage() {
         </motion.div>
       )}
     </div>
+    </AdminLayout>
   );
 }

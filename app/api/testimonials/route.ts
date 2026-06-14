@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Testimonial } from '@/lib/models'
+import { logAudit } from '@/lib/services/audit.service'
+import { syncMediaFields } from '@/lib/validations'
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,16 +27,21 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
+    const data = syncMediaFields(body)
 
-    if (!body.name || !body.designation || !body.message) {
+    if (!data.name || !data.designation || !data.message) {
       return NextResponse.json({ error: 'Name, designation, and message are required' }, { status: 400 })
     }
 
     const db = await connectDB()
     if (db) {
-      const testimonial = await Testimonial.create(body)
+      const testimonial = await Testimonial.create(data)
+      await logAudit(auth.session, 'create', 'testimonial', testimonial._id.toString())
       return NextResponse.json(testimonial, { status: 201 })
     }
 

@@ -65,10 +65,12 @@ export default function CampaignsPage() {
         </div>
 
         {/* Form */}
-        {showForm && (
+        {(showForm || editingId) && (
           <CampaignForm
+            initialData={editingId ? campaigns.find((c) => c.slug === editingId) : undefined}
             onSuccess={() => {
               setShowForm(false)
+              setEditingId(null)
               fetchCampaigns()
             }}
           />
@@ -96,7 +98,10 @@ export default function CampaignsPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => setEditingId(campaign.slug)}
+                      onClick={() => {
+                        setEditingId(campaign.slug)
+                        setShowForm(true)
+                      }}
                       className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950"
                     >
                       <Edit2 className="h-4 w-4" />

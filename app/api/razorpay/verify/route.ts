@@ -2,9 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyRazorpaySignature } from '@/lib/razorpay'
 import { connectDB } from '@/lib/mongodb'
 import { Donation, Campaign } from '@/lib/models'
+import { rateLimit } from '@/lib/rate-limit'
+import {
+  sendDonationConfirmation,
+  sendDonationThankYou,
+  sendDonationAdminNotification,
+} from '@/lib/email'
+
+function getClientIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown'
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request)
+    const limit = rateLimit(ip, { windowMs: 60 * 1000, max: 10 })
+    if (!limit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
+
     const body = await request.json()
     const {
       razorpay_order_id,
@@ -50,14 +68,33 @@ export async function POST(request: NextRequest) {
       })
 
       // Update campaign raised amount if campaign donation
+      let campaignTitle: string | undefined
       if (campaignSlug) {
-        await Campaign.findOneAndUpdate(
+        const campaign = await Campaign.findOneAndUpdate(
           { slug: campaignSlug },
           {
             $inc: { raised: amount / 100, donors: 1 },
-          }
+          },
+          { new: true }
         )
+        campaignTitle = campaign?.title
       }
+
+      const donationAmount = amount / 100
+      const emailData = {
+        donorName: donorName || 'Anonymous',
+        donorEmail: donorEmail || '',
+        donorPhone: donorPhone || '',
+        amount: donationAmount,
+        receipt: donation.receipt,
+        campaignTitle,
+      }
+
+      if (donorEmail) {
+        void sendDonationConfirmation(emailData).catch(console.error)
+        void sendDonationThankYou(emailData).catch(console.error)
+      }
+      void sendDonationAdminNotification(emailData).catch(console.error)
 
       return NextResponse.json({
         success: true,

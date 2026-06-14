@@ -28,7 +28,20 @@ export default function ContactsPage() {
 
   const handleDeleteContact = async (id: string) => {
     if (!confirm('Delete this message?')) return
-    setContacts(contacts.filter((c) => c._id !== id))
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+
+      if (response.ok) {
+        setContacts(contacts.filter((c) => c._id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete contact:', error)
+    }
   }
 
   return (

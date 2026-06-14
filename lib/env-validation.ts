@@ -18,7 +18,12 @@ const productionConfig: EnvConfig = {
     'SMTP_USER',
     'SMTP_PASS',
     'SMTP_FROM',
+    'ADMIN_EMAIL',
+    'ADMIN_PASSWORD',
     'NEXT_PUBLIC_APP_URL',
+    'CLOUDINARY_CLOUD_NAME',
+    'CLOUDINARY_API_KEY',
+    'CLOUDINARY_API_SECRET',
   ],
 }
 
@@ -36,7 +41,12 @@ const developmentConfig: EnvConfig = {
     'SMTP_USER',
     'SMTP_PASS',
     'SMTP_FROM',
+    'ADMIN_EMAIL',
+    'ADMIN_PASSWORD',
     'NEXT_PUBLIC_APP_URL',
+    'CLOUDINARY_CLOUD_NAME',
+    'CLOUDINARY_API_KEY',
+    'CLOUDINARY_API_SECRET',
   ],
 }
 

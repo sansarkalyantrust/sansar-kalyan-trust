@@ -28,7 +28,20 @@ export default function VolunteersPage() {
 
   const handleDeleteVolunteer = async (id: string) => {
     if (!confirm('Delete this application?')) return
-    setVolunteers(volunteers.filter((v) => v._id !== id))
+
+    try {
+      const response = await fetch('/api/volunteer', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+
+      if (response.ok) {
+        setVolunteers(volunteers.filter((v) => v._id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete volunteer:', error)
+    }
   }
 
   return (

@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor, requireAdminRole, canDelete } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Review } from '@/lib/models'
+import { logAudit } from '@/lib/services/audit.service'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -16,6 +21,7 @@ export async function PATCH(
       if (!review) {
         return NextResponse.json({ error: 'Review not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'update', 'review', id)
       return NextResponse.json(review)
     }
 
@@ -30,12 +36,19 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdminRole(request)
+  if (auth instanceof NextResponse) return auth
+  if (!canDelete(auth.session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const { id } = await params
     const db = await connectDB()
 
     if (db) {
       await Review.findByIdAndDelete(id)
+      await logAudit(auth.session, 'delete', 'review', id)
       return NextResponse.json({ success: true, message: 'Review deleted' })
     }
 

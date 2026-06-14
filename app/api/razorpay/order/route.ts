@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getRazorpay } from '@/lib/razorpay'
+import { rateLimit } from '@/lib/rate-limit'
+
+function getClientIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown'
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request)
+    const limit = rateLimit(ip, { windowMs: 60 * 1000, max: 10 })
+    if (!limit.success) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
+    }
+
     const body = await request.json()
     const { amount, currency = 'INR', receipt, notes } = body
 

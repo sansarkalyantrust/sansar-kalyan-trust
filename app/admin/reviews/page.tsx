@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { StarRating } from "@/components/star-rating";
 import { Trash2, Check, X, Star } from "lucide-react";
+import { AdminLayout } from "@/components/admin/admin-layout";
 
 interface Review {
   _id: string;
@@ -85,6 +86,7 @@ export default function AdminReviewsPage() {
   };
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Reviews Management</h1>
@@ -213,5 +215,6 @@ export default function AdminReviewsPage() {
         </motion.div>
       )}
     </div>
+    </AdminLayout>
   );
 }

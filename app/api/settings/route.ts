@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Settings } from '@/lib/models'
+import { logAudit } from '@/lib/services/audit.service'
 
 const defaultSettings: Record<string, any> = {
   homepage_hero: {
@@ -61,6 +63,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
     const { key, value } = body
@@ -76,6 +81,7 @@ export async function PUT(request: NextRequest) {
         { key, value },
         { upsert: true, new: true }
       )
+      await logAudit(auth.session, 'update', 'settings', key)
       return NextResponse.json(setting)
     }
 

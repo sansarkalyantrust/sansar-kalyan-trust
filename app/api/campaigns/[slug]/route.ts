@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor, requireAdminRole, canDelete } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Campaign } from '@/lib/models'
-import { campaignUpdateSchema } from '@/lib/validations'
+import { logAudit } from '@/lib/services/audit.service'
+import { campaignUpdateSchema, syncMediaFields } from '@/lib/validations'
 
 export async function GET(
   request: NextRequest,
@@ -30,6 +32,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const { slug } = await params
     const body = await request.json()
@@ -42,16 +47,19 @@ export async function PUT(
       )
     }
 
+    const data = syncMediaFields(validation.data)
+
     const db = await connectDB()
     if (db) {
       const campaign = await Campaign.findOneAndUpdate(
         { slug },
-        { $set: validation.data },
+        { $set: data },
         { new: true }
       )
       if (!campaign) {
         return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'update', 'campaign', campaign._id.toString(), { slug })
       return NextResponse.json(campaign)
     }
 
@@ -66,6 +74,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireAdminRole(request)
+  if (auth instanceof NextResponse) return auth
+  if (!canDelete(auth.session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const { slug } = await params
     const db = await connectDB()
@@ -75,6 +89,7 @@ export async function DELETE(
       if (!campaign) {
         return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'delete', 'campaign', campaign._id.toString(), { slug })
       return NextResponse.json({ success: true, message: 'Campaign deleted' })
     }
 

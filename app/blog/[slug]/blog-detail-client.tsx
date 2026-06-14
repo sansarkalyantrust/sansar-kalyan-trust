@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Calendar, Clock, User, Tag, ArrowLeft, Share2 } from "lucide-react";
+import { SafeHtml } from "@/components/safe-html";
 
 interface Blog {
   _id: string;
@@ -169,45 +170,8 @@ export default function BlogDetailClient({ blog, relatedBlogs }: BlogDetailClien
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="prose prose-lg max-w-none"
             >
-              {blog.content.split("\n").map((paragraph, idx) => {
-                if (paragraph.startsWith("# ")) {
-                  return (
-                    <h1 key={idx} className="text-4xl font-bold mt-8 mb-4">
-                      {paragraph.replace("# ", "")}
-                    </h1>
-                  );
-                } else if (paragraph.startsWith("## ")) {
-                  return (
-                    <h2 key={idx} className="text-3xl font-bold mt-8 mb-4">
-                      {paragraph.replace("## ", "")}
-                    </h2>
-                  );
-                } else if (paragraph.startsWith("### ")) {
-                  return (
-                    <h3 key={idx} className="text-2xl font-bold mt-6 mb-3">
-                      {paragraph.replace("### ", "")}
-                    </h3>
-                  );
-                } else if (paragraph.startsWith("- ")) {
-                  return (
-                    <li key={idx} className="text-muted-foreground mb-2 ml-4">
-                      {paragraph.replace("- ", "")}
-                    </li>
-                  );
-                } else if (paragraph.trim()) {
-                  return (
-                    <p
-                      key={idx}
-                      className="text-muted-foreground leading-relaxed mb-4"
-                    >
-                      {paragraph}
-                    </p>
-                  );
-                }
-                return null;
-              })}
+              <SafeHtml html={blog.content} className="text-muted-foreground" />
             </motion.div>
           </div>
         </section>

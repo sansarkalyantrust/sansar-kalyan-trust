@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor, requireAdminRole, canDelete } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Blog } from '@/lib/models'
-import { blogUpdateSchema } from '@/lib/validations'
+import { logAudit } from '@/lib/services/audit.service'
+import { blogUpdateSchema, syncMediaFields } from '@/lib/validations'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 
 export async function GET(
   request: NextRequest,
@@ -30,6 +33,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const { slug } = await params
     const body = await request.json()
@@ -39,16 +45,24 @@ export async function PUT(
       return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 })
     }
 
+    const data = syncMediaFields(validation.data)
+    if (data.content) {
+      data.content = sanitizeHtml(data.content)
+    }
+    if (data.status === 'published') (data as Record<string, unknown>).published = true
+    if (data.status === 'draft') (data as Record<string, unknown>).published = false
+
     const db = await connectDB()
     if (db) {
       const blog = await Blog.findOneAndUpdate(
         { slug },
-        { $set: validation.data },
+        { $set: data },
         { new: true }
       )
       if (!blog) {
         return NextResponse.json({ error: 'Blog post not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'update', 'blog', blog._id.toString(), { slug })
       return NextResponse.json(blog)
     }
 
@@ -63,6 +77,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireAdminRole(request)
+  if (auth instanceof NextResponse) return auth
+  if (!canDelete(auth.session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const { slug } = await params
     const db = await connectDB()
@@ -72,6 +92,7 @@ export async function DELETE(
       if (!blog) {
         return NextResponse.json({ error: 'Blog post not found' }, { status: 404 })
       }
+      await logAudit(auth.session, 'delete', 'blog', blog._id.toString(), { slug })
       return NextResponse.json({ success: true, message: 'Blog post deleted' })
     }
 

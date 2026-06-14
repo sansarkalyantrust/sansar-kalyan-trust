@@ -1,4 +1,12 @@
 import nodemailer from 'nodemailer'
+import {
+  baseEmailTemplate,
+  detailRow,
+  escapeHtml,
+  formatCurrency,
+  formatDate,
+  infoBox,
+} from '@/lib/email-templates/base'
 
 let transporter: nodemailer.Transporter | null = null
 
@@ -23,6 +31,10 @@ function getTransporter() {
   })
 
   return transporter
+}
+
+export function getAdminEmail(): string {
+  return process.env.ADMIN_EMAIL || process.env.SMTP_FROM || 'admin@sansarkalyan.org'
 }
 
 export async function sendEmail({
@@ -58,83 +70,197 @@ export async function sendEmail({
   }
 }
 
-export async function sendContactNotification(data: {
-  name: string
-  email: string
-  phone?: string
-  message: string
-}) {
-  const adminEmail = process.env.SMTP_FROM || 'admin@sansarkalyan.org'
+// ─── Donation emails ─────────────────────────────────────────────────────────
 
-  return sendEmail({
-    to: adminEmail,
-    subject: `New Contact Inquiry from ${data.name}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #16a34a;">New Contact Inquiry</h2>
-        <div style="background: #f9fafb; padding: 20px; border-radius: 8px;">
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Phone:</strong> ${data.phone || 'Not provided'}</p>
-          <p><strong>Message:</strong></p>
-          <p style="background: white; padding: 15px; border-radius: 4px;">${data.message}</p>
-        </div>
-        <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">
-          This notification was sent from Sansar Kalyan Trust website.
-        </p>
-      </div>
-    `,
-  })
-}
-
-export async function sendDonationReceipt(data: {
+export async function sendDonationConfirmation(data: {
   donorName: string
   donorEmail: string
   amount: number
   receipt?: string
   campaignTitle?: string
 }) {
+  const content = `
+    <p>Dear ${escapeHtml(data.donorName)},</p>
+    <p>Your donation to Sansar Kalyan Trust has been confirmed. Here are your payment details:</p>
+    ${infoBox(`
+      ${detailRow('Amount', formatCurrency(data.amount))}
+      ${data.campaignTitle ? detailRow('Campaign', data.campaignTitle) : ''}
+      ${data.receipt ? detailRow('Receipt No.', data.receipt) : ''}
+      ${detailRow('Date', formatDate())}
+    `)}
+    <p>Please keep this email for your records.</p>
+  `
+
   return sendEmail({
     to: data.donorEmail,
-    subject: `Thank you for your donation - Sansar Kalyan Trust`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #16a34a; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-          <h1 style="color: white; margin: 0;">Thank You!</h1>
-        </div>
-        <div style="padding: 30px; border: 1px solid #e5e7eb; border-top: 0; border-radius: 0 0 8px 8px;">
-          <p>Dear ${data.donorName},</p>
-          <p>Thank you for your generous donation to Sansar Kalyan Trust.</p>
-          <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Amount:</strong> ₹${data.amount.toLocaleString('en-IN')}</p>
-            ${data.campaignTitle ? `<p><strong>Campaign:</strong> ${data.campaignTitle}</p>` : ''}
-            ${data.receipt ? `<p><strong>Receipt:</strong> ${data.receipt}</p>` : ''}
-            <p><strong>Date:</strong> ${new Date().toLocaleDateString('en-IN')}</p>
-          </div>
-          <p>Your contribution helps us serve communities through healthcare, education, and environmental initiatives.</p>
-          <p>With gratitude,<br/>Sansar Kalyan Trust Team</p>
-        </div>
-      </div>
-    `,
+    subject: 'Donation Confirmation – Sansar Kalyan Trust',
+    html: baseEmailTemplate({
+      title: 'Donation Confirmed',
+      previewText: `Your donation of ${formatCurrency(data.amount)} has been confirmed.`,
+      content,
+    }),
   })
 }
 
-export async function sendVolunteerConfirmation(data: {
-  name: string
-  email: string
+export async function sendDonationThankYou(data: {
+  donorName: string
+  donorEmail: string
+  amount: number
+  campaignTitle?: string
 }) {
+  const content = `
+    <p>Dear ${escapeHtml(data.donorName)},</p>
+    <p>Thank you for your generous donation of <strong>${formatCurrency(data.amount)}</strong>${data.campaignTitle ? ` to <strong>${escapeHtml(data.campaignTitle)}</strong>` : ''}.</p>
+    <p>Your contribution helps us serve communities through healthcare, education, and environmental initiatives. Together, we are making a real difference in people's lives.</p>
+    <p>With heartfelt gratitude,<br/>Sansar Kalyan Trust Team</p>
+  `
+
   return sendEmail({
-    to: data.email,
-    subject: `Volunteer Application Received - Sansar Kalyan Trust`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #16a34a;">Application Received</h2>
-        <p>Dear ${data.name},</p>
-        <p>Thank you for your interest in volunteering with Sansar Kalyan Trust.</p>
-        <p>We have received your application and our team will review it shortly. You will hear back from us within 5-7 business days.</p>
-        <p>Thank you for wanting to make a difference!</p>
-        <p>Best regards,<br/>Sansar Kalyan Trust Team</p>
-      </div>
-    `,
+    to: data.donorEmail,
+    subject: 'Thank You for Your Donation – Sansar Kalyan Trust',
+    html: baseEmailTemplate({
+      title: 'Thank You!',
+      previewText: 'Your generosity makes a difference.',
+      content,
+    }),
   })
 }
+
+export async function sendDonationAdminNotification(data: {
+  donorName: string
+  donorEmail: string
+  donorPhone?: string
+  amount: number
+  receipt?: string
+  campaignTitle?: string
+}) {
+  const content = `
+    <p>A new donation has been received:</p>
+    ${infoBox(`
+      ${detailRow('Donor', data.donorName)}
+      ${detailRow('Email', data.donorEmail)}
+      ${data.donorPhone ? detailRow('Phone', data.donorPhone) : ''}
+      ${detailRow('Amount', formatCurrency(data.amount))}
+      ${data.campaignTitle ? detailRow('Campaign', data.campaignTitle) : ''}
+      ${data.receipt ? detailRow('Receipt', data.receipt) : ''}
+      ${detailRow('Date', formatDate())}
+    `)}
+  `
+
+  return sendEmail({
+    to: getAdminEmail(),
+    subject: `New Donation: ${formatCurrency(data.amount)} from ${data.donorName}`,
+    html: baseEmailTemplate({
+      title: 'New Donation Received',
+      previewText: `${data.donorName} donated ${formatCurrency(data.amount)}`,
+      content,
+    }),
+  })
+}
+
+// ─── Volunteer emails ────────────────────────────────────────────────────────
+
+export async function sendVolunteerConfirmation(data: { name: string; email: string }) {
+  const content = `
+    <p>Dear ${escapeHtml(data.name)},</p>
+    <p>Thank you for your interest in volunteering with Sansar Kalyan Trust.</p>
+    <p>We have received your application and our team will review it shortly. You will hear back from us within 5–7 business days.</p>
+    <p>Thank you for wanting to make a difference!</p>
+    <p>Best regards,<br/>Sansar Kalyan Trust Team</p>
+  `
+
+  return sendEmail({
+    to: data.email,
+    subject: 'Volunteer Application Received – Sansar Kalyan Trust',
+    html: baseEmailTemplate({
+      title: 'Application Received',
+      previewText: 'We received your volunteer application.',
+      content,
+    }),
+  })
+}
+
+export async function sendVolunteerAdminNotification(data: {
+  name: string
+  email: string
+  phone: string
+  city: string
+  skills: string[]
+  motivation: string
+}) {
+  const content = `
+    <p>A new volunteer application has been submitted:</p>
+    ${infoBox(`
+      ${detailRow('Name', data.name)}
+      ${detailRow('Email', data.email)}
+      ${detailRow('Phone', data.phone)}
+      ${detailRow('City', data.city)}
+      ${detailRow('Skills', data.skills.join(', '))}
+      <p style="margin: 12px 0 0;"><strong>Motivation:</strong></p>
+      <p style="margin: 4px 0 0; background: white; padding: 12px; border-radius: 4px;">${escapeHtml(data.motivation)}</p>
+    `)}
+  `
+
+  return sendEmail({
+    to: getAdminEmail(),
+    subject: `New Volunteer Application: ${data.name}`,
+    html: baseEmailTemplate({
+      title: 'New Volunteer Application',
+      previewText: `${data.name} applied to volunteer`,
+      content,
+    }),
+  })
+}
+
+// ─── Contact emails ──────────────────────────────────────────────────────────
+
+export async function sendContactAcknowledgement(data: { name: string; email: string }) {
+  const content = `
+    <p>Dear ${escapeHtml(data.name)},</p>
+    <p>Thank you for reaching out to Sansar Kalyan Trust.</p>
+    <p>We have received your message and a member of our team will get back to you within 2–3 business days.</p>
+    <p>Best regards,<br/>Sansar Kalyan Trust Team</p>
+  `
+
+  return sendEmail({
+    to: data.email,
+    subject: 'We Received Your Message – Sansar Kalyan Trust',
+    html: baseEmailTemplate({
+      title: 'Message Received',
+      previewText: 'We received your inquiry and will respond soon.',
+      content,
+    }),
+  })
+}
+
+export async function sendContactAdminNotification(data: {
+  name: string
+  email: string
+  phone?: string
+  message: string
+}) {
+  const content = `
+    <p>A new contact inquiry has been submitted:</p>
+    ${infoBox(`
+      ${detailRow('Name', data.name)}
+      ${detailRow('Email', data.email)}
+      ${data.phone ? detailRow('Phone', data.phone) : detailRow('Phone', 'Not provided')}
+      <p style="margin: 12px 0 0;"><strong>Message:</strong></p>
+      <p style="margin: 4px 0 0; background: white; padding: 12px; border-radius: 4px;">${escapeHtml(data.message)}</p>
+    `)}
+  `
+
+  return sendEmail({
+    to: getAdminEmail(),
+    subject: `New Contact Inquiry from ${data.name}`,
+    html: baseEmailTemplate({
+      title: 'New Contact Inquiry',
+      previewText: `${data.name} sent a message via the contact form`,
+      content,
+    }),
+  })
+}
+
+// Legacy aliases (kept for backward compatibility)
+export const sendContactNotification = sendContactAdminNotification
+export const sendDonationReceipt = sendDonationConfirmation

@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { Heart, Mail, MapPin, Phone } from 'lucide-react'
+import { useSettings } from '@/lib/hooks/useSettings'
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const { contact, footer } = useSettings()
 
   return (
     <footer className="w-full border-t border-border bg-card">
@@ -24,7 +25,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Dedicated to healthcare, education, and community development.
+              {footer.tagline}
             </p>
           </div>
 
@@ -62,19 +63,19 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground">
-                  India
+                  {contact.address}
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <Phone className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground">
-                  +91 (XXXX) XXX-XXXX
+                  {contact.phone}
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground">
-                  info@sansarkalyan.org
+                  {contact.email}
                 </span>
               </li>
             </ul>
@@ -96,7 +97,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Sansar Kalyan Trust. All rights reserved.
+            {footer.copyright}
           </p>
           <div className="flex gap-6 mt-4 sm:mt-0">
             <Link href="#" className="text-sm text-muted-foreground hover:text-primary">

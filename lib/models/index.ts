@@ -1,5 +1,18 @@
 import mongoose from 'mongoose'
 
+const cloudinaryAssetSchema = new mongoose.Schema(
+  {
+    public_id: { type: String, required: true },
+    secure_url: { type: String, required: true },
+    asset_id: { type: String, required: true },
+    width: { type: Number, default: 0 },
+    height: { type: Number, default: 0 },
+    format: { type: String, default: 'jpg' },
+    uploaded_at: { type: Date, default: Date.now },
+  },
+  { _id: false }
+)
+
 // User Schema
 const userSchema = new mongoose.Schema(
   {
@@ -8,7 +21,23 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     role: { type: String, enum: ['superadmin', 'admin', 'editor'], default: 'admin' },
     avatar: { type: String },
+    avatarAsset: cloudinaryAssetSchema,
     isActive: { type: Boolean, default: true },
+  },
+  { timestamps: true }
+)
+
+// Media Asset Library
+const mediaAssetSchema = new mongoose.Schema(
+  {
+    public_id: { type: String, required: true, unique: true },
+    secure_url: { type: String, required: true },
+    asset_id: { type: String, required: true },
+    width: { type: Number, default: 0 },
+    height: { type: Number, default: 0 },
+    format: { type: String, default: 'jpg' },
+    uploaded_at: { type: Date, default: Date.now },
+    folder: { type: String, required: true },
   },
   { timestamps: true }
 )
@@ -21,18 +50,22 @@ const campaignSchema = new mongoose.Schema(
     description: { type: String, required: true },
     fullDescription: { type: String },
     image: { type: String },
+    imageAsset: cloudinaryAssetSchema,
     galleryImages: [{ type: String }],
+    galleryAssets: [cloudinaryAssetSchema],
     goal: { type: Number, required: true },
     raised: { type: Number, default: 0 },
     donors: { type: Number, default: 0 },
     startDate: { type: Date },
     endDate: { type: Date },
-    status: { type: String, enum: ['active', 'inactive', 'completed'], default: 'active' },
+    status: { type: String, enum: ['active', 'inactive', 'completed', 'draft', 'published'], default: 'active' },
     seoTitle: { type: String },
     seoDescription: { type: String },
+    ogImageAsset: cloudinaryAssetSchema,
   },
   { timestamps: true }
 )
+campaignSchema.index({ status: 1 })
 
 // Event Schema
 const eventSchema = new mongoose.Schema(
@@ -41,17 +74,22 @@ const eventSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String },
+    imageAsset: cloudinaryAssetSchema,
     images: [{ type: String }],
+    galleryAssets: [cloudinaryAssetSchema],
     date: { type: Date, required: true },
     time: { type: String },
     venue: { type: String },
+    location: { type: String },
+    registrationLink: { type: String },
     type: { type: String, required: true },
-    status: { type: String, enum: ['upcoming', 'completed'], default: 'upcoming' },
+    status: { type: String, enum: ['upcoming', 'completed', 'draft', 'published'], default: 'upcoming' },
     seoTitle: { type: String },
     seoDescription: { type: String },
   },
   { timestamps: true }
 )
+eventSchema.index({ status: 1 })
 
 // Blog Post Schema
 const blogSchema = new mongoose.Schema(
@@ -60,14 +98,37 @@ const blogSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String },
+    imageAsset: cloudinaryAssetSchema,
+    featuredImageAsset: cloudinaryAssetSchema,
+    ogImageAsset: cloudinaryAssetSchema,
     content: { type: String, required: true },
     category: { type: String, required: true },
     tags: [{ type: String }],
     author: { type: String, default: 'Sansar Kalyan Trust' },
     readTime: { type: Number, default: 5 },
     published: { type: Boolean, default: false },
+    status: { type: String, enum: ['draft', 'published', 'scheduled'], default: 'draft' },
+    publishDate: { type: Date },
+    scheduledPublishDate: { type: Date },
     seoTitle: { type: String },
     seoDescription: { type: String },
+  },
+  { timestamps: true }
+)
+blogSchema.index({ category: 1 })
+blogSchema.index({ tags: 1 })
+blogSchema.index({ published: 1 })
+blogSchema.index({ status: 1 })
+
+// Gallery Album Schema
+const galleryAlbumSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    description: { type: String },
+    coverAsset: cloudinaryAssetSchema,
+    status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 )
@@ -77,9 +138,55 @@ const gallerySchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String },
-    image: { type: String, required: true },
+    image: { type: String },
+    imageAsset: cloudinaryAssetSchema,
     category: { type: String },
+    albumId: { type: mongoose.Schema.Types.ObjectId, ref: 'GalleryAlbum' },
     order: { type: Number, default: 0 },
+    status: { type: String, enum: ['draft', 'published'], default: 'published' },
+  },
+  { timestamps: true }
+)
+
+// Impact Story Schema
+const impactStorySchema = new mongoose.Schema(
+  {
+    slug: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    featuredImageAsset: cloudinaryAssetSchema,
+    galleryAssets: [cloudinaryAssetSchema],
+    status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+    seoTitle: { type: String },
+    seoDescription: { type: String },
+  },
+  { timestamps: true }
+)
+
+// Team Member Schema
+const teamMemberSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    designation: { type: String, required: true },
+    bio: { type: String },
+    photo: { type: String },
+    photoAsset: cloudinaryAssetSchema,
+    order: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
+  },
+  { timestamps: true }
+)
+
+// Banner Schema
+const bannerSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    subtitle: { type: String },
+    image: { type: String },
+    imageAsset: cloudinaryAssetSchema,
+    link: { type: String },
+    order: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 )
@@ -130,7 +237,7 @@ const volunteerSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-// Review Schema (NEW)
+// Review Schema
 const reviewSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -143,20 +250,21 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-// Testimonial Schema (NEW)
+// Testimonial Schema
 const testimonialSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     designation: { type: String, required: true },
     message: { type: String, required: true },
     photo: { type: String },
+    photoAsset: cloudinaryAssetSchema,
     order: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 )
 
-// Settings Schema (NEW)
+// Settings Schema
 const settingsSchema = new mongoose.Schema(
   {
     key: { type: String, required: true, unique: true },
@@ -165,15 +273,51 @@ const settingsSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-// Create and export models
+// Audit Log Schema
+const auditLogSchema = new mongoose.Schema(
+  {
+    userId: { type: String },
+    email: { type: String, required: true },
+    action: { type: String, required: true },
+    entityType: { type: String, required: true },
+    entityId: { type: String },
+    metadata: { type: mongoose.Schema.Types.Mixed },
+  },
+  { timestamps: true }
+)
+auditLogSchema.index({ createdAt: -1 })
+auditLogSchema.index({ entityType: 1 })
+
+// Page View Schema
+const pageViewSchema = new mongoose.Schema(
+  {
+    path: { type: String, required: true },
+    referrer: { type: String },
+    userAgent: { type: String },
+    sessionId: { type: String },
+  },
+  { timestamps: true }
+)
+pageViewSchema.index({ createdAt: -1 })
+pageViewSchema.index({ path: 1 })
+
 export const User = mongoose.models.User || mongoose.model('User', userSchema)
+export const MediaAsset = mongoose.models.MediaAsset || mongoose.model('MediaAsset', mediaAssetSchema)
 export const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', campaignSchema)
 export const Event = mongoose.models.Event || mongoose.model('Event', eventSchema)
 export const Blog = mongoose.models.Blog || mongoose.model('Blog', blogSchema)
+export const GalleryAlbum = mongoose.models.GalleryAlbum || mongoose.model('GalleryAlbum', galleryAlbumSchema)
 export const Gallery = mongoose.models.Gallery || mongoose.model('Gallery', gallerySchema)
+export const ImpactStory = mongoose.models.ImpactStory || mongoose.model('ImpactStory', impactStorySchema)
+export const TeamMember = mongoose.models.TeamMember || mongoose.model('TeamMember', teamMemberSchema)
+export const Banner = mongoose.models.Banner || mongoose.model('Banner', bannerSchema)
 export const Donation = mongoose.models.Donation || mongoose.model('Donation', donationSchema)
 export const Contact = mongoose.models.Contact || mongoose.model('Contact', contactSchema)
 export const Volunteer = mongoose.models.Volunteer || mongoose.model('Volunteer', volunteerSchema)
 export const Review = mongoose.models.Review || mongoose.model('Review', reviewSchema)
 export const Testimonial = mongoose.models.Testimonial || mongoose.model('Testimonial', testimonialSchema)
 export const Settings = mongoose.models.Settings || mongoose.model('Settings', settingsSchema)
+export const AuditLog = mongoose.models.AuditLog || mongoose.model('AuditLog', auditLogSchema)
+export const PageView = mongoose.models.PageView || mongoose.model('PageView', pageViewSchema)
+
+export { cloudinaryAssetSchema }

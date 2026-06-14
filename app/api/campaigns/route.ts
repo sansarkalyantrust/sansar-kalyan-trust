@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Campaign } from '@/lib/models'
-import { campaignCreateSchema, generateSlug } from '@/lib/validations'
+import { logAudit } from '@/lib/services/audit.service'
+import { campaignCreateSchema, generateSlug, syncMediaFields } from '@/lib/validations'
 
 // Mock campaigns fallback
 const mockCampaigns = [
@@ -108,6 +110,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
 
@@ -119,7 +124,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const data = validation.data
+    const data = syncMediaFields(validation.data)
     const slug = data.slug || generateSlug(data.title)
 
     const db = await connectDB()
@@ -131,11 +136,13 @@ export async function POST(request: NextRequest) {
       }
 
       const campaign = await Campaign.create({ ...data, slug })
+      await logAudit(auth.session, 'create', 'campaign', campaign._id.toString())
       return NextResponse.json(campaign, { status: 201 })
     }
 
     // Mock fallback
     const newCampaign = { ...data, slug, _id: Math.random().toString(36), createdAt: new Date() }
+    await logAudit(auth.session, 'create', 'campaign', newCampaign._id)
     return NextResponse.json(newCampaign, { status: 201 })
   } catch (error) {
     console.error('Error creating campaign:', error)

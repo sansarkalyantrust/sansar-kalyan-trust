@@ -8,19 +8,13 @@ import Image from 'next/image'
 import { SlideUp, FadeIn, ScaleIn, StaggerChildren, StaggerItem } from '@/components/motion-wrapper'
 import { motion } from 'framer-motion'
 import { useEffect, useState, useRef } from 'react'
+import { useSettings } from '@/lib/hooks/useSettings'
 
 const heroImages = [
   '/Activity-camp.jpeg',
   '/Help_activity.jpeg',
   '/medicine_camp.jpeg',
   '/school_camp.jpeg',
-]
-
-const impactStats = [
-  { label: 'Families Helped', value: 5000, suffix: '+' },
-  { label: 'Events Organized', value: 150, suffix: '+' },
-  { label: 'Active Volunteers', value: 200, suffix: '+' },
-  { label: 'Donations Received', value: 12, suffix: 'L+' },
 ]
 
 const galleryPreview = [
@@ -65,6 +59,18 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
 
 export function HomepageClient() {
   const [currentImage, setCurrentImage] = useState(0)
+  const { hero, impact } = useSettings()
+
+  const impactStats = [
+    { label: 'Families Helped', value: impact.familiesHelped, suffix: '+' },
+    { label: 'Events Organized', value: impact.eventsOrganized, suffix: '+' },
+    { label: 'Active Volunteers', value: impact.volunteersActive, suffix: '+' },
+    {
+      label: 'Donations Received',
+      value: impact.donationsReceived >= 100000 ? Math.floor(impact.donationsReceived / 100000) : impact.donationsReceived,
+      suffix: impact.donationsReceived >= 100000 ? 'L+' : '+',
+    },
+  ]
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -99,20 +105,20 @@ export function HomepageClient() {
           >
             <div>
               <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-4">
-                Sansar Kalyan Trust
+                {hero.title}
               </h1>
               <h2 className="text-2xl md:text-3xl text-white/90 font-semibold mb-6">
-                Har Daan Ek Pehchaan
+                {hero.subtitle}
               </h2>
             </div>
             <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-2xl">
-              Empowering communities through education, health, and environment. Every contribution creates lasting change.
+              {hero.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link href="/donate">
                 <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold gap-2 px-8 py-3 h-auto rounded-lg text-lg">
                   <Heart className="h-5 w-5" />
-                  Donate Now
+                  {hero.cta}
                 </Button>
               </Link>
               <Link href="/volunteer">

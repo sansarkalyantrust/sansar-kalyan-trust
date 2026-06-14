@@ -254,18 +254,20 @@ export async function seedDatabase() {
   }
 
   try {
-    // Seed Super Admin
-    const existingAdmin = await User.findOne({ email: 'admin@sansarkalyan.org' })
+    // Seed Super Admin from env
+    const adminEmail = process.env.ADMIN_EMAIL || 'sansarkalyantrust@gmail.com'
+    const adminPassword = process.env.ADMIN_PASSWORD || 'ShekharRana@123'
+    const existingAdmin = await User.findOne({ email: adminEmail.toLowerCase() })
     if (!existingAdmin) {
-      const hashedPassword = await bcryptjs.hash('Admin@123', 10)
+      const hashedPassword = await bcryptjs.hash(adminPassword, 10)
       await User.create({
-        email: 'admin@sansarkalyan.org',
+        email: adminEmail.toLowerCase(),
         password: hashedPassword,
         name: 'Super Admin',
         role: 'superadmin',
         isActive: true,
       })
-      console.log('Super Admin created: admin@sansarkalyan.org / Admin@123')
+      console.log(`Super Admin created: ${adminEmail}`)
     }
 
     // Seed Settings

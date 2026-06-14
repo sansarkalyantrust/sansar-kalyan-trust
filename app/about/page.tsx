@@ -2,7 +2,8 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { PageHero } from '@/components/page-hero'
 import { Card } from '@/components/ui/card'
-import { Heart, BookOpen, Sprout, Shield, Leaf, Users, Target, Award, MapPin, Calendar } from 'lucide-react'
+import { AboutMissionSection } from '@/components/about-mission-section'
+import { Heart, BookOpen, Sprout, Shield, Leaf, Users, MapPin } from 'lucide-react'
 
 export default function About() {
   return (
@@ -18,26 +19,7 @@ export default function About() {
         {/* Mission & Vision */}
         <section className="w-full py-20 md:py-32 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Mission */}
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-primary">Our Mission</h2>
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  Dedicated to uplifting communities through education, health camps, environmental initiatives, and sustainable livelihoods. We believe in empowering individuals to lead healthier, more productive, and dignified lives.
-                </p>
-                <p className="text-lg font-italic text-primary">
-                  <em>Har Daan Ek Pehchaan</em>
-                </p>
-              </div>
-
-              {/* Vision */}
-              <div className="space-y-4">
-                <h2 className="text-3xl font-bold text-primary">Our Vision</h2>
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  A society where everyone has access to quality education, healthcare, and a clean environment. We envision communities empowered by knowledge, healthy in body and mind, and united in solidarity across Haryana and India.
-                </p>
-              </div>
-            </div>
+            <AboutMissionSection />
           </div>
         </section>
 

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Event } from '@/lib/models'
-import { eventCreateSchema, generateSlug } from '@/lib/validations'
+import { logAudit } from '@/lib/services/audit.service'
+import { eventCreateSchema, generateSlug, syncMediaFields } from '@/lib/validations'
 
 const mockEvents = [
   {
@@ -93,6 +95,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
 
@@ -101,16 +106,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 })
     }
 
-    const data = validation.data
+    const data = syncMediaFields(validation.data)
     const slug = data.slug || generateSlug(data.title)
 
     const db = await connectDB()
     if (db) {
       const event = await Event.create({ ...data, slug })
+      await logAudit(auth.session, 'create', 'event', event._id.toString())
       return NextResponse.json(event, { status: 201 })
     }
 
     const newEvent = { ...data, slug, _id: Math.random().toString(36), createdAt: new Date() }
+    await logAudit(auth.session, 'create', 'event', newEvent._id)
     return NextResponse.json(newEvent, { status: 201 })
   } catch (error) {
     console.error('Error creating event:', error)

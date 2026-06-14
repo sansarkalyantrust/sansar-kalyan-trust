@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcryptjs from 'bcryptjs'
+import { requireSuperAdmin } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { User } from '@/lib/models'
 import { addMockUser, findMockUserByEmail } from '@/lib/mock-users'
+import { logAudit } from '@/lib/services/audit.service'
 import { registerSchema } from '@/lib/validations'
 
 export async function POST(request: NextRequest) {
+  const auth = await requireSuperAdmin(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
 
@@ -40,6 +45,8 @@ export async function POST(request: NextRequest) {
         role: role || 'admin',
         isActive: true,
       })
+
+      await logAudit(auth.session, 'create', 'user', newUser._id.toString(), { email: newUser.email, role: newUser.role })
 
       return NextResponse.json(
         {
@@ -77,6 +84,8 @@ export async function POST(request: NextRequest) {
     }
 
     addMockUser(newUser)
+
+    await logAudit(auth.session, 'create', 'user', newUser._id, { email: newUser.email, role: newUser.role })
 
     return NextResponse.json(
       {

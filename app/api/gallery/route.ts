@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor, requireAdminRole, canDelete } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Gallery } from '@/lib/models'
+import { logAudit } from '@/lib/services/audit.service'
+import { syncMediaFields } from '@/lib/validations'
 
 const mockGallery = [
   { _id: '1', title: 'Health Camp 2024', image: '/medicine_camp.jpeg', category: 'Healthcare', description: 'Free health checkup camp', order: 1 },
@@ -23,12 +26,14 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '20')
     const category = searchParams.get('category')
+    const albumId = searchParams.get('albumId')
 
     const db = await connectDB()
 
     if (db) {
       const query: any = {}
       if (category && category !== 'All') query.category = category
+      if (albumId) query.albumId = albumId
 
       const total = await Gallery.countDocuments(query)
       const items = await Gallery.find(query)
@@ -57,20 +62,26 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
+    const data = syncMediaFields(body)
 
-    if (!body.title || !body.image) {
+    if (!data.title || !data.image) {
       return NextResponse.json({ error: 'Title and image are required' }, { status: 400 })
     }
 
     const db = await connectDB()
     if (db) {
-      const item = await Gallery.create(body)
+      const item = await Gallery.create(data)
+      await logAudit(auth.session, 'create', 'gallery', item._id.toString())
       return NextResponse.json(item, { status: 201 })
     }
 
-    const newItem = { ...body, _id: Math.random().toString(36), createdAt: new Date() }
+    const newItem = { ...data, _id: Math.random().toString(36), createdAt: new Date() }
+    await logAudit(auth.session, 'create', 'gallery', newItem._id)
     return NextResponse.json(newItem, { status: 201 })
   } catch (error) {
     console.error('Error creating gallery item:', error)
@@ -79,6 +90,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const auth = await requireAdminRole(request)
+  if (auth instanceof NextResponse) return auth
+  if (!canDelete(auth.session)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const { id } = await request.json()
 
@@ -89,6 +106,7 @@ export async function DELETE(request: NextRequest) {
     const db = await connectDB()
     if (db) {
       await Gallery.findByIdAndDelete(id)
+      await logAudit(auth.session, 'delete', 'gallery', id)
       return NextResponse.json({ success: true, message: 'Gallery item deleted' })
     }
 

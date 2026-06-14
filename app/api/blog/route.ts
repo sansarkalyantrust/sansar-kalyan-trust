@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Blog } from '@/lib/models'
-import { blogCreateSchema, generateSlug } from '@/lib/validations'
+import { logAudit } from '@/lib/services/audit.service'
+import { blogCreateSchema, generateSlug, syncMediaFields } from '@/lib/validations'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 
 const mockBlogPosts = [
   {
@@ -49,6 +52,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const search = searchParams.get('search')
     const category = searchParams.get('category')
+    const tag = searchParams.get('tag')
     const published = searchParams.get('published')
 
     const db = await connectDB()
@@ -62,7 +66,10 @@ export async function GET(request: NextRequest) {
         ]
       }
       if (category) query.category = category
-      if (published !== null && published !== undefined) query.published = published === 'true'
+      if (tag) query.tags = tag
+      if (published !== null && published !== undefined && published !== '') {
+        query.published = published === 'true'
+      }
 
       const total = await Blog.countDocuments(query)
       const blogs = await Blog.find(query)
@@ -96,6 +103,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireEditor(request)
+  if (auth instanceof NextResponse) return auth
+
   try {
     const body = await request.json()
 
@@ -104,17 +114,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 })
     }
 
-    const data = validation.data
+    const data = syncMediaFields(validation.data)
+    if (data.content) {
+      data.content = sanitizeHtml(data.content)
+    }
     const slug = data.slug || generateSlug(data.title)
-    const readTime = Math.ceil((data.content?.length || 0) / 1000)
+    const readTime = Math.ceil((data.content?.replace(/<[^>]*>/g, '').length || 0) / 1000)
 
     const db = await connectDB()
     if (db) {
-      const blog = await Blog.create({ ...data, slug, readTime: readTime || 5 })
+      const blog = await Blog.create({
+        ...data,
+        slug,
+        readTime: readTime || 5,
+        published: data.published ?? data.status === 'published',
+      })
+      await logAudit(auth.session, 'create', 'blog', blog._id.toString())
       return NextResponse.json(blog, { status: 201 })
     }
 
     const newPost = { ...data, slug, readTime, _id: Math.random().toString(36), createdAt: new Date() }
+    await logAudit(auth.session, 'create', 'blog', newPost._id)
     return NextResponse.json(newPost, { status: 201 })
   } catch (error) {
     console.error('Error creating blog post:', error)
