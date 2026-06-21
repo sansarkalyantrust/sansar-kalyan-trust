@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Heart, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { RotatingTagline } from '@/components/rotating-tagline'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -28,21 +29,19 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+      <div className="container mx-auto flex min-h-20 lg:min-h-16 max-w-7xl items-center justify-between gap-4 px-4 py-2 lg:py-0">
         {/* Logo and Tagline */}
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3 min-w-0">
           <img
             src="/logo.png"
             alt="Sansar Kalyan Trust"
             className="h-12 w-12 object-contain"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col min-w-0">
             <span className="font-bold text-primary text-base">
               Sansar Kalyan Trust
             </span>
-            <span className="text-xs text-muted-foreground">
-              Har Daan Ek Pehchaan
-            </span>
+            <RotatingTagline className="text-[11px] leading-snug text-muted-foreground w-[12rem] sm:w-[22rem] lg:w-[18rem] xl:w-[28rem]" />
           </div>
         </Link>
 

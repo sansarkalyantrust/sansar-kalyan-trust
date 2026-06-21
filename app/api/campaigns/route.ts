@@ -4,63 +4,20 @@ import { connectDB } from '@/lib/mongodb'
 import { Campaign } from '@/lib/models'
 import { logAudit } from '@/lib/services/audit.service'
 import { campaignCreateSchema, generateSlug, syncMediaFields } from '@/lib/validations'
+import { keyPrograms } from '@/lib/site-content'
 
-// Mock campaigns fallback
-const mockCampaigns = [
-  {
-    slug: 'har-daan-ek-pehchaan',
-    title: 'Har Daan Ek Pehchaan',
-    description: 'Every donation creates an identity for someone in need. Support our core mission of healthcare, education, and community development.',
-    fullDescription: 'Har Daan Ek Pehchaan is our flagship campaign that embodies the spirit of Sansar Kalyan Trust.',
-    image: '/Help_activity.jpeg',
-    galleryImages: ['/Help_childs.jpeg', '/help_families.jpeg'],
-    goal: 500000,
-    raised: 125000,
-    donors: 450,
-    status: 'active',
-    startDate: '2024-01-01',
-    endDate: '2025-12-31',
-  },
-  {
-    slug: 'swasth-samaj-sashakt-bharat',
-    title: 'Swasth Samaj Sashakt Bharat',
-    description: 'Supporting health camps and medical awareness programs in rural communities.',
-    fullDescription: 'Our healthcare initiative brings free medical checkups and medicines to remote villages.',
-    image: '/medicine_camp.jpeg',
-    galleryImages: ['/medicine_camp2.jpeg'],
-    goal: 300000,
-    raised: 180000,
-    donors: 320,
-    status: 'active',
-    startDate: '2024-03-01',
-    endDate: '2025-06-30',
-  },
-  {
-    slug: 'sadak-suraksha-pashu-raksha',
-    title: 'Sadak Suraksha Pashu Raksha',
-    description: 'Street animal rescue and care program to protect and support stray animals.',
-    image: '/Activity-camp.jpeg',
-    goal: 150000,
-    raised: 45000,
-    donors: 120,
-    status: 'active',
-    startDate: '2024-04-01',
-    endDate: '2025-03-31',
-  },
-  {
-    slug: 'free-night-street-education',
-    title: 'Free Night Street Education',
-    description: 'Empowering underprivileged children through free education programs.',
-    image: '/school_camp.jpeg',
-    galleryImages: ['/school_camp2.jpeg', '/gifts_students.jpeg'],
-    goal: 200000,
-    raised: 75000,
-    donors: 200,
-    status: 'active',
-    startDate: '2024-02-01',
-    endDate: '2025-12-31',
-  },
-]
+const mockCampaigns = keyPrograms.map((program, index) => ({
+  slug: program.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+  title: program.title,
+  description: program.quote,
+  fullDescription: program.points.join('\n'),
+  image: ['/Activity3.jpeg', '/medicine_camp.jpeg', '/Activity-cloth-help.jpeg'][index],
+  galleryImages: [],
+  goal: 0,
+  raised: 0,
+  donors: 0,
+  status: 'active',
+}))
 
 export async function GET(request: NextRequest) {
   try {
@@ -93,10 +50,9 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Fallback to mock data
     let filtered = mockCampaigns
     if (status) {
-      filtered = mockCampaigns.filter(c => c.status === status)
+      filtered = mockCampaigns.filter((campaign) => campaign.status === status)
     }
 
     return NextResponse.json({
@@ -140,7 +96,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(campaign, { status: 201 })
     }
 
-    // Mock fallback
     const newCampaign = { ...data, slug, _id: Math.random().toString(36), createdAt: new Date() }
     await logAudit(auth.session, 'create', 'campaign', newCampaign._id)
     return NextResponse.json(newCampaign, { status: 201 })

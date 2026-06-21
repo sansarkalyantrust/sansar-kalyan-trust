@@ -2,29 +2,55 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Heart, Stethoscope, BookOpen, Sprout, ArrowRight, Users, Calendar, HandHeart, Star, Quote } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { SlideUp, FadeIn, ScaleIn, StaggerChildren, StaggerItem } from '@/components/motion-wrapper'
+import { GovernmentRecognitions } from '@/components/government-recognitions'
+import { RotatingTagline } from '@/components/rotating-tagline'
+import {
+  aboutParagraphs,
+  achievements,
+  contactDetails,
+  coreValues,
+  glimpses,
+  joinOptions,
+  keyPrograms,
+  mainQuote,
+  missionAreas,
+  moreFromGround,
+  organizationName,
+} from '@/lib/site-content'
+import {
+  ArrowRight,
+  BookOpen,
+  GraduationCap,
+  HandHeart,
+  Heart,
+  HeartPulse,
+  IndianRupee,
+  Leaf,
+  Mail,
+  MapPin,
+  Package,
+  PawPrint,
+  Phone,
+  Quote,
+  Recycle,
+  Share2,
+  Sprout,
+} from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
-import { useSettings } from '@/lib/hooks/useSettings'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
 const heroImages = [
   '/Activity-camp.jpeg',
   '/Help_activity.jpeg',
   '/medicine_camp.jpeg',
-  '/school_camp.jpeg',
+  '/Activity-group-plants.jpeg',
 ]
 
-const galleryPreview = [
-  { src: '/Activity-1.jpeg', alt: 'Community Activity' },
-  { src: '/Help_childs.jpeg', alt: 'Helping Children' },
-  { src: '/Activity-plants.jpeg', alt: 'Tree Plantation' },
-  { src: '/medicine_camp2.jpeg', alt: 'Health Camp' },
-  { src: '/gifts_students.jpeg', alt: 'Student Gifts' },
-  { src: '/help_cloth_charity.jpeg', alt: 'Cloth Charity' },
-]
+const missionIcons = [HeartPulse, Leaf, HandHeart, PawPrint, GraduationCap]
+const valueIcons = [HandHeart, BookOpen, Heart]
+const joinIcons = [HandHeart, Package, IndianRupee, Share2]
 
 function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -33,7 +59,9 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setInView(true) },
+      ([entry]) => {
+        if (entry.isIntersecting) setInView(true)
+      },
       { threshold: 0.3 }
     )
     if (ref.current) observer.observe(ref.current)
@@ -44,33 +72,52 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
     if (!inView) return
     let start = 0
     const end = target
-    const duration = 2000
+    const duration = 1600
     const increment = end / (duration / 16)
     const timer = setInterval(() => {
       start += increment
-      if (start >= end) { setCount(end); clearInterval(timer) }
-      else setCount(Math.floor(start))
+      if (start >= end) {
+        setCount(end)
+        clearInterval(timer)
+      } else {
+        setCount(Math.floor(start))
+      }
     }, 16)
     return () => clearInterval(timer)
   }, [inView, target])
 
-  return <span ref={ref}>{count.toLocaleString('en-IN')}{suffix}</span>
+  return (
+    <span ref={ref}>
+      {count.toLocaleString('en-IN')}
+      {suffix}
+    </span>
+  )
+}
+
+function ImageCard({
+  title,
+  description,
+  image,
+}: {
+  title: string
+  description: string
+  image: string
+}) {
+  return (
+    <Card className="overflow-hidden">
+      <div className="relative aspect-[4/3] bg-muted">
+        <Image src={image} alt={title} fill className="object-cover" sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" />
+      </div>
+      <div className="p-5">
+        <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      </div>
+    </Card>
+  )
 }
 
 export function HomepageClient() {
   const [currentImage, setCurrentImage] = useState(0)
-  const { hero, impact } = useSettings()
-
-  const impactStats = [
-    { label: 'Families Helped', value: impact.familiesHelped, suffix: '+' },
-    { label: 'Events Organized', value: impact.eventsOrganized, suffix: '+' },
-    { label: 'Active Volunteers', value: impact.volunteersActive, suffix: '+' },
-    {
-      label: 'Donations Received',
-      value: impact.donationsReceived >= 100000 ? Math.floor(impact.donationsReceived / 100000) : impact.donationsReceived,
-      suffix: impact.donationsReceived >= 100000 ? 'L+' : '+',
-    },
-  ]
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -81,44 +128,45 @@ export function HomepageClient() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative w-full py-32 md:py-48 overflow-hidden">
-        {/* Background Image Slider */}
+      <section className="relative w-full py-28 md:py-40 overflow-hidden">
         <div className="absolute inset-0">
           {heroImages.map((img, i) => (
             <div
               key={img}
-              className={`absolute inset-0 transition-opacity duration-1000 ${i === currentImage ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                i === currentImage ? 'opacity-100' : 'opacity-0'
+              }`}
             >
               <Image src={img} alt="" fill className="object-cover" priority={i === 0} />
             </div>
           ))}
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-black/65" />
         </div>
 
         <div className="container mx-auto max-w-6xl px-4 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-8 max-w-3xl"
+            className="space-y-7 max-w-4xl"
           >
             <div>
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-4">
-                {hero.title}
+              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-5">
+                {organizationName}
               </h1>
-              <h2 className="text-2xl md:text-3xl text-white/90 font-semibold mb-6">
-                {hero.subtitle}
-              </h2>
+              <RotatingTagline className="text-xl md:text-3xl text-white/95 font-semibold leading-snug max-w-4xl" />
             </div>
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-2xl">
-              {hero.description}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+
+            <div className="flex gap-3 text-white/90 max-w-3xl">
+              <Quote className="h-6 w-6 flex-shrink-0 mt-1" />
+              <p className="text-lg md:text-xl leading-relaxed">{mainQuote}</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
               <Link href="/donate">
                 <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold gap-2 px-8 py-3 h-auto rounded-lg text-lg">
                   <Heart className="h-5 w-5" />
-                  {hero.cta}
+                  Donate Now
                 </Button>
               </Link>
               <Link href="/volunteer">
@@ -131,229 +179,268 @@ export function HomepageClient() {
         </div>
       </section>
 
-      {/* About Section */}
       <section className="w-full py-20 md:py-28 bg-card">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <SlideUp>
-              <div className="space-y-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                  About Sansar Kalyan Trust
-                </h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Sansar Kalyan Trust is a registered non-profit organization dedicated to uplifting underprivileged communities through accessible healthcare, quality education, and sustainable environmental initiatives.
+            <div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                About Us
+              </h2>
+              {aboutParagraphs.map((paragraph) => (
+                <p key={paragraph} className="text-lg text-muted-foreground leading-relaxed">
+                  {paragraph}
                 </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  Founded with the vision of creating a world where every individual has equal opportunities, we have been serving communities across India through health camps, free education programs, environmental conservation, and community welfare.
-                </p>
-                <Link href="/about">
-                  <Button variant="outline" className="gap-2 mt-4">
-                    Learn More About Us <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </SlideUp>
-            <ScaleIn delay={0.2}>
-              <div className="relative h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
-                <Image
-                  src="/founder_ShekharRana.jpeg"
-                  alt="Founder -Dr. Shekhar Rana"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                  <p className="text-white font-semibold">Dr. Shekhar Rana</p>
-                  <p className="text-white/80 text-sm">Founder, Sansar Kalyan Trust</p>
-                </div>
-              </div>
-            </ScaleIn>
+              ))}
+              <Link href="/about">
+                <Button variant="outline" className="gap-2 mt-2">
+                  Learn More About Us <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            <div className="relative h-80 lg:h-96 rounded-lg overflow-hidden shadow-xl">
+              <Image
+                src="/Activity-camp.jpeg"
+                alt="Sansar Kalyan Trust volunteers and community supporters"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Focus Areas */}
       <section className="w-full py-20 md:py-28 bg-background">
         <div className="container mx-auto max-w-6xl px-4">
-          <SlideUp>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Our Focus Areas
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                We work across multiple sectors to create sustainable impact in communities.
-              </p>
-            </div>
-          </SlideUp>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Core Values
+            </h2>
+          </div>
 
-          <StaggerChildren className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <StaggerItem>
-              <Card className="p-8 hover:shadow-lg transition-all duration-300 border-green-200 dark:border-green-800 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center mb-5">
-                  <Stethoscope className="h-7 w-7 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">Healthcare</h3>
-                <p className="text-muted-foreground mb-4">
-                  Providing medical support, health camps, and awareness programs to rural areas.
-                </p>
-                <Link href="/campaigns" className="inline-flex items-center text-green-600 font-semibold hover:gap-2 transition-all gap-1">
-                  Learn More <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Card>
-            </StaggerItem>
-            <StaggerItem>
-              <Card className="p-8 hover:shadow-lg transition-all duration-300 border-blue-200 dark:border-blue-800 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-5">
-                  <BookOpen className="h-7 w-7 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">Education</h3>
-                <p className="text-muted-foreground mb-4">
-                  Supporting education through scholarships, skill development, and mentorship programs.
-                </p>
-                <Link href="/campaigns" className="inline-flex items-center text-blue-600 font-semibold hover:gap-2 transition-all gap-1">
-                  Learn More <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Card>
-            </StaggerItem>
-            <StaggerItem>
-              <Card className="p-8 hover:shadow-lg transition-all duration-300 border-amber-200 dark:border-amber-800 hover:-translate-y-1">
-                <div className="w-14 h-14 bg-amber-100 dark:bg-amber-900 rounded-xl flex items-center justify-center mb-5">
-                  <Sprout className="h-7 w-7 text-amber-600" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-3">Community Growth</h3>
-                <p className="text-muted-foreground mb-4">
-                  Building sustainable livelihoods and environmental conservation initiatives.
-                </p>
-                <Link href="/campaigns" className="inline-flex items-center text-amber-600 font-semibold hover:gap-2 transition-all gap-1">
-                  Learn More <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Card>
-            </StaggerItem>
-          </StaggerChildren>
-        </div>
-      </section>
-
-      {/* Impact Statistics */}
-      <section className="w-full py-20 md:py-28 bg-green-600 dark:bg-green-800 text-white">
-        <div className="container mx-auto max-w-6xl px-4">
-          <FadeIn>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Impact</h2>
-              <p className="text-lg text-white/80">Numbers that reflect our commitment to service</p>
-            </div>
-          </FadeIn>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {impactStats.map((stat, i) => (
-              <SlideUp key={stat.label} delay={i * 0.1}>
-                <div className="text-center">
-                  <div className="text-4xl md:text-5xl font-bold mb-2">
-                    <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {coreValues.map((value, index) => {
+              const Icon = valueIcons[index]
+              return (
+                <Card key={value.title} className="p-7 text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-5">
+                    <Icon className="h-6 w-6 text-primary" />
                   </div>
-                  <p className="text-white/80 text-sm md:text-base">{stat.label}</p>
-                </div>
-              </SlideUp>
-            ))}
+                  <p className="text-sm font-semibold text-primary mb-1">{value.title}</p>
+                  <h3 className="text-2xl font-bold text-foreground mb-3">
+                    {value.subtitle}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {value.description}
+                  </p>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Gallery Preview */}
       <section className="w-full py-20 md:py-28 bg-card">
         <div className="container mx-auto max-w-6xl px-4">
-          <SlideUp>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Our Gallery</h2>
-              <p className="text-lg text-muted-foreground">Moments captured from our initiatives</p>
-            </div>
-          </SlideUp>
-          <StaggerChildren className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryPreview.map((img) => (
-              <StaggerItem key={img.src}>
-                <div className="relative h-48 md:h-64 rounded-xl overflow-hidden group">
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerChildren>
-          <div className="text-center mt-8">
-            <Link href="/gallery">
-              <Button variant="outline" className="gap-2">
-                View Full Gallery <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Mission
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            {missionAreas.map((area, index) => {
+              const Icon = missionIcons[index]
+              return (
+                <Card key={area.title} className="p-6">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-5">
+                    <Icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm font-semibold text-primary mb-2">
+                    {index + 1}. {area.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {area.description}
+                  </p>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Donate CTA */}
-      <section className="w-full py-20 md:py-28 bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-white">
-        <div className="container mx-auto max-w-6xl px-4 text-center">
-          <SlideUp>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Join Us in Making a Difference
-            </h2>
-            <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
-              Every contribution, no matter how small, helps us reach more people in need. Together, we can transform lives and build stronger communities.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/donate">
-                <Button className="bg-white hover:bg-white/90 text-green-700 font-semibold px-8 py-3 h-auto gap-2 text-lg">
-                  <Heart className="h-5 w-5" />
-                  Donate Now
-                </Button>
-              </Link>
-              <Link href="/campaigns">
-                <Button className="bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-3 h-auto gap-2 text-lg border border-white/30">
-                  View Campaigns
-                </Button>
-              </Link>
-            </div>
-          </SlideUp>
-        </div>
-      </section>
-
-      {/* Contact CTA */}
       <section className="w-full py-20 md:py-28 bg-background">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <SlideUp delay={0}>
-              <Card className="p-8">
-                <HandHeart className="h-10 w-10 text-green-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">Volunteer</h3>
-                <p className="text-muted-foreground mb-4">Join our team and make a direct impact</p>
-                <Link href="/volunteer">
-                  <Button variant="outline" size="sm">Apply Now</Button>
-                </Link>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Our Key Programs
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {keyPrograms.map((program) => (
+              <Card key={program.title} className="p-6 space-y-5">
+                <div>
+                  <p className="text-sm text-primary font-semibold mb-1">
+                    {program.heading}
+                  </p>
+                  <h3 className="text-2xl font-bold text-foreground">
+                    {program.title}
+                  </h3>
+                </div>
+                <p className="text-primary font-semibold leading-relaxed">
+                  {program.quote}
+                </p>
+                <ul className="space-y-3">
+                  {program.points.map((point) => (
+                    <li key={point} className="flex gap-3 text-sm text-muted-foreground leading-relaxed">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </Card>
-            </SlideUp>
-            <SlideUp delay={0.1}>
-              <Card className="p-8">
-                <Calendar className="h-10 w-10 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">Events</h3>
-                <p className="text-muted-foreground mb-4">Participate in our upcoming programs</p>
-                <Link href="/events">
-                  <Button variant="outline" size="sm">View Events</Button>
-                </Link>
-              </Card>
-            </SlideUp>
-            <SlideUp delay={0.2}>
-              <Card className="p-8">
-                <Users className="h-10 w-10 text-purple-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">Contact Us</h3>
-                <p className="text-muted-foreground mb-4">Get in touch for collaborations</p>
-                <Link href="/contact">
-                  <Button variant="outline" size="sm">Reach Out</Button>
-                </Link>
-              </Card>
-            </SlideUp>
+            ))}
           </div>
         </div>
       </section>
+
+      <section className="w-full py-20 md:py-28 bg-green-600 dark:bg-green-800 text-white">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Achievements</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {achievements.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-4xl md:text-5xl font-bold mb-2">
+                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                </div>
+                <p className="text-white/85 text-sm md:text-base">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full py-20 md:py-28 bg-card">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Glimpses of Our Work
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {glimpses.map((item) => (
+              <ImageCard key={item.title} {...item} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full py-20 md:py-28 bg-background">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              More from the Ground
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {moreFromGround.map((item) => (
+              <ImageCard key={item.title} {...item} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full py-20 md:py-28 bg-card">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              How Can You Join Us
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {joinOptions.map((option, index) => {
+              const Icon = joinIcons[index]
+              return (
+                <Card key={option.title} className="p-6 text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-5">
+                    <Icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-3">
+                    {option.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {option.description}
+                  </p>
+                </Card>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="w-full py-20 md:py-28 bg-background">
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Contact & Donate
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="p-8 space-y-5">
+              <div className="flex gap-4">
+                <MapPin className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-semibold text-foreground">Registered Address:</p>
+                  <p className="text-muted-foreground">{contactDetails.registeredAddress}</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Phone className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-semibold text-foreground">Phone / WhatsApp:</p>
+                  <a href={`tel:${contactDetails.phoneHref}`} className="text-primary hover:underline">
+                    {contactDetails.phone}
+                  </a>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-semibold text-foreground">Email:</p>
+                  <a href={`mailto:${contactDetails.email}`} className="text-primary hover:underline">
+                    {contactDetails.email}
+                  </a>
+                </div>
+              </div>
+              <p className="text-muted-foreground">
+                <span className="font-semibold text-foreground">Registration No.:</span>{' '}
+                {contactDetails.registrationNo}
+              </p>
+              <p className="text-muted-foreground">
+                <span className="font-semibold text-foreground">UPI (BHIM):</span>{' '}
+                {contactDetails.upi}
+              </p>
+              <p className="text-sm text-muted-foreground">{contactDetails.qrNote}</p>
+            </Card>
+
+            <Card className="p-8 flex flex-col items-center justify-center text-center">
+              <Image
+                src="/donation_scanner.jpeg"
+                alt="Sansar Kalyan Trust UPI QR code"
+                width={260}
+                height={260}
+                className="rounded-lg border bg-white"
+              />
+              <p className="mt-5 font-semibold text-foreground">UPI (BHIM)</p>
+              <p className="text-primary">{contactDetails.upi}</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <GovernmentRecognitions />
     </>
   )
 }

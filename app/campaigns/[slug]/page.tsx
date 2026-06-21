@@ -1,80 +1,57 @@
-import { notFound } from "next/navigation";
-import { Campaign } from "@/lib/models";
-import { connectDB, isMongoConnected } from "@/lib/mongodb";
-import { mockCampaigns } from "@/lib/mock-data.ts";
-import CampaignDetailClient from "./campaign-detail-client";
-import { Metadata } from "next";
+import { notFound } from 'next/navigation'
+import CampaignDetailClient from './campaign-detail-client'
+import { Metadata } from 'next'
+import { keyPrograms } from '@/lib/site-content'
 
 interface CampaignDetailProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }
+
+const slugFor = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
 async function getCampaign(slug: string) {
-  if (await isMongoConnected()) {
-    await connectDB();
-    const campaign = await Campaign.findOne({ slug }).lean();
-    if (!campaign) return null;
-    return JSON.parse(JSON.stringify(campaign));
-  }
-  
-  // Fallback to mock data
-  return mockCampaigns.find((c) => c.slug === slug) || null;
-}
+  const program = keyPrograms.find((item) => slugFor(item.heading) === slug)
+  if (!program) return null
 
-async function getRelatedCampaigns(currentSlug: string, category?: string) {
-  if (await isMongoConnected()) {
-    await connectDB();
-    const query: any = { slug: { $ne: currentSlug }, status: "active" };
-    if (category) query.category = category;
-    
-    const campaigns = await Campaign.find(query)
-      .limit(3)
-      .select("title slug description image goal raised")
-      .lean();
-    return JSON.parse(JSON.stringify(campaigns));
+  return {
+    slug,
+    title: program.title,
+    heading: program.heading,
+    quote: program.quote,
+    points: program.points,
+    image:
+      slug === 'har-daan-ek-pehchaan'
+        ? '/Activity3.jpeg'
+        : slug === 'swasth-samaj-sashakt-bharat'
+          ? '/medicine_camp.jpeg'
+          : '/Activity-cloth-help.jpeg',
   }
-  
-  return mockCampaigns
-    .filter((c) => c.slug !== currentSlug && c.status === "active")
-    .slice(0, 3);
 }
 
 export async function generateMetadata({ params }: CampaignDetailProps): Promise<Metadata> {
-  const { slug } = await params;
-  const campaign = await getCampaign(slug);
-  
+  const { slug } = await params
+  const campaign = await getCampaign(slug)
+
   if (!campaign) {
     return {
-      title: "Campaign Not Found | Sansar Kalyan Trust",
-    };
+      title: 'Campaign Not Found | Sansar Kalyan Trust',
+    }
   }
-  
+
   return {
     title: `${campaign.title} | Sansar Kalyan Trust`,
-    description: campaign.seoDescription || campaign.description,
-    openGraph: {
-      title: campaign.title,
-      description: campaign.description,
-      images: campaign.image ? [{ url: campaign.image }] : [],
-      type: "article",
-    },
-  };
+    description: campaign.quote,
+  }
 }
 
 export default async function CampaignDetailPage({ params }: CampaignDetailProps) {
-  const { slug } = await params;
-  const campaign = await getCampaign(slug);
-  
+  const { slug } = await params
+  const campaign = await getCampaign(slug)
+
   if (!campaign) {
-    notFound();
+    notFound()
   }
-  
-  const relatedCampaigns = await getRelatedCampaigns(slug, campaign.category);
-  
-  return (
-    <CampaignDetailClient 
-      campaign={campaign} 
-      relatedCampaigns={relatedCampaigns} 
-    />
-  );
+
+  return <CampaignDetailClient campaign={campaign} />
 }

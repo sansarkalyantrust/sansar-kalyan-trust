@@ -129,7 +129,7 @@ export function VolunteerForm() {
           <Input
             type="tel"
             name="phone"
-            placeholder="+91 XXXXXXXXXX"
+            placeholder="+91 98765 43210"
             value={formData.phone}
             onChange={handleChange}
             required

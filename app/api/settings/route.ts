@@ -3,35 +3,44 @@ import { requireEditor } from '@/lib/api-auth'
 import { connectDB } from '@/lib/mongodb'
 import { Settings } from '@/lib/models'
 import { logAudit } from '@/lib/services/audit.service'
+import {
+  aboutParagraphs,
+  contactDetails,
+  englishTagline,
+  organizationName,
+} from '@/lib/site-content'
 
 const defaultSettings: Record<string, any> = {
   homepage_hero: {
-    title: 'Sansar Kalyan Trust',
-    subtitle: 'Har Daan Ek Pehchaan',
-    description: 'Empowering communities through education, health, and environment.',
+    title: organizationName,
+    subtitle: englishTagline,
+    description: aboutParagraphs.join(' '),
   },
   impact_numbers: {
-    familiesHelped: 5000,
-    eventsOrganized: 150,
-    volunteersActive: 200,
-    donationsReceived: 1200000,
+    treesPlanted: 350,
+    notebooksMade: 270,
+    healthAwarenessCamps: 20,
+    animalsProtected: 100,
   },
   about_content: {
-    mission: 'To uplift underprivileged communities through accessible healthcare, quality education, and sustainable environmental initiatives.',
-    vision: 'A world where every individual has access to healthcare, education, and opportunities for growth.',
-    description: 'Sansar Kalyan Trust is a registered non-profit organization working across India.',
+    mission: aboutParagraphs[1],
+    vision: aboutParagraphs[0],
+    description: aboutParagraphs.join(' '),
   },
   footer_data: {
-    address: 'Rohtak, Haryana, India',
-    phone: '+91 9999999999',
-    email: 'info@sansarkalyan.org',
+    address: contactDetails.registeredAddress,
+    phone: contactDetails.phone,
+    email: contactDetails.email,
+    tagline: aboutParagraphs[1],
     socialLinks: { facebook: '', instagram: '', twitter: '', youtube: '' },
   },
   contact_info: {
-    address: 'Rohtak, Haryana, India',
-    phone: '+91 9999999999',
-    email: 'info@sansarkalyan.org',
-    officeHours: 'Mon-Sat: 9:00 AM - 6:00 PM',
+    address: contactDetails.registeredAddress,
+    phone: contactDetails.phone,
+    whatsapp: contactDetails.phone,
+    email: contactDetails.email,
+    registrationNo: contactDetails.registrationNo,
+    upi: contactDetails.upi,
   },
 }
 

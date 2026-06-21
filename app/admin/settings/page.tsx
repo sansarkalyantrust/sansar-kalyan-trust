@@ -4,16 +4,23 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Save, RotateCcw } from "lucide-react";
 import { AdminLayout } from "@/components/admin/admin-layout";
+import {
+  aboutParagraphs,
+  achievements,
+  contactDetails,
+  englishTagline,
+  organizationName,
+} from "@/lib/site-content";
 
 interface SettingsData {
   homepage?: {
     heroTitle?: string;
     heroSubtitle?: string;
     heroCTA?: string;
-    impactFamilies?: number;
-    impactEvents?: number;
-    impactVolunteers?: number;
-    impactDonations?: number;
+    treesPlanted?: number;
+    notebooksMade?: number;
+    healthAwarenessCamps?: number;
+    animalsProtected?: number;
   };
   about?: {
     mission?: string;
@@ -69,24 +76,24 @@ export default function AdminSettingsPage() {
 
   const getDefaultSettings = (): SettingsData => ({
     homepage: {
-      heroTitle: "Empowering Communities, Transforming Lives",
-      heroSubtitle: "Join us in creating positive change through healthcare, education, and community development.",
+      heroTitle: organizationName,
+      heroSubtitle: englishTagline,
       heroCTA: "Donate Now",
-      impactFamilies: 1000,
-      impactEvents: 50,
-      impactVolunteers: 200,
-      impactDonations: 5000000,
+      treesPlanted: achievements[0].value,
+      notebooksMade: achievements[1].value,
+      healthAwarenessCamps: achievements[2].value,
+      animalsProtected: achievements[3].value,
     },
     about: {
-      mission: "To empower underprivileged communities through sustainable healthcare, education, and social welfare initiatives.",
-      vision: "A society where every individual has access to quality healthcare, education, and opportunities for growth.",
-      description: "Sansar Kalyan Trust is a non-profit organization dedicated to serving communities...",
+      mission: aboutParagraphs[1],
+      vision: aboutParagraphs[0],
+      description: aboutParagraphs.join(" "),
     },
     contact: {
-      address: "Sector 5, Rohtak, Haryana, India",
-      phone: "+91 98765 43210",
-      email: "info@sansarkalyan.org",
-      whatsapp: "+91 98765 43210",
+      address: contactDetails.registeredAddress,
+      phone: contactDetails.phone,
+      email: contactDetails.email,
+      whatsapp: contactDetails.phone,
     },
     social: {
       facebook: "https://facebook.com/sansarkalyantrust",
@@ -96,7 +103,7 @@ export default function AdminSettingsPage() {
       youtube: "",
     },
     footer: {
-      copyrightText: "© 2024 Sansar Kalyan Trust. All rights reserved.",
+      copyrightText: `© ${new Date().getFullYear()} ${organizationName}. All rights reserved.`,
       newsletterEnabled: true,
     },
   });
@@ -252,45 +259,45 @@ export default function AdminSettingsPage() {
           </div>
 
           <div className="p-6 rounded-lg border bg-card space-y-4">
-            <h3 className="text-lg font-semibold">Impact Statistics</h3>
+            <h3 className="text-lg font-semibold">Achievements</h3>
             
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Families Helped</label>
+                <label className="block text-sm font-medium mb-2">Trees Planted</label>
                 <input
                   type="number"
-                  value={settings.homepage?.impactFamilies || 0}
-                  onChange={(e) => updateField("homepage", "impactFamilies", Number(e.target.value))}
+                  value={settings.homepage?.treesPlanted || 0}
+                  onChange={(e) => updateField("homepage", "treesPlanted", Number(e.target.value))}
                   className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Events Conducted</label>
+                <label className="block text-sm font-medium mb-2">Notebooks Made from Recycled Pages</label>
                 <input
                   type="number"
-                  value={settings.homepage?.impactEvents || 0}
-                  onChange={(e) => updateField("homepage", "impactEvents", Number(e.target.value))}
+                  value={settings.homepage?.notebooksMade || 0}
+                  onChange={(e) => updateField("homepage", "notebooksMade", Number(e.target.value))}
                   className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Active Volunteers</label>
+                <label className="block text-sm font-medium mb-2">Health Awareness Camps Conducted</label>
                 <input
                   type="number"
-                  value={settings.homepage?.impactVolunteers || 0}
-                  onChange={(e) => updateField("homepage", "impactVolunteers", Number(e.target.value))}
+                  value={settings.homepage?.healthAwarenessCamps || 0}
+                  onChange={(e) => updateField("homepage", "healthAwarenessCamps", Number(e.target.value))}
                   className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Total Donations (₹)</label>
+                <label className="block text-sm font-medium mb-2">Animals Protected with Reflectors</label>
                 <input
                   type="number"
-                  value={settings.homepage?.impactDonations || 0}
-                  onChange={(e) => updateField("homepage", "impactDonations", Number(e.target.value))}
+                  value={settings.homepage?.animalsProtected || 0}
+                  onChange={(e) => updateField("homepage", "animalsProtected", Number(e.target.value))}
                   className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               </div>

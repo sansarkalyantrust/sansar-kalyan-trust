@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { Event } from "@/lib/models";
 import { connectDB, isMongoConnected } from "@/lib/mongodb";
-import { mockEvents } from "@/app/api/events/route";
 import EventDetailClient from "./event-detail-client";
 import { Metadata } from "next";
 
@@ -24,14 +23,14 @@ const mockEventsData = [
     status: 'upcoming',
   },
   {
-    slug: 'education-drive',
-    title: 'Free Night Education Drive',
-    description: 'Interactive learning session for underprivileged children.',
-    image: '/school_camp.jpeg',
-    images: ['/school_camp.jpeg'],
+    slug: 'education-outreach',
+    title: 'Education Outreach',
+    description: 'A volunteer displays APJ Kalam-inspired notebooks made for underprivileged students.',
+    image: '/gifts_students.jpeg',
+    images: ['/gifts_students.jpeg'],
     date: new Date('2024-12-20').toISOString(),
     time: '6:00 PM - 9:00 PM',
-    venue: 'Open Ground, Sector 5, Rohtak',
+    venue: 'Rohtak, Haryana',
     type: 'Education',
     status: 'upcoming',
   },
@@ -49,8 +48,8 @@ const mockEventsData = [
   },
   {
     slug: 'cloth-distribution',
-    title: 'Winter Cloth Distribution',
-    description: '500+ families benefited from cloth distribution drive.',
+    title: 'Clothes & Food Drive',
+    description: 'Children and families receive donated clothes and food during a community drive.',
     image: '/help_cloth_charity.jpeg',
     images: ['/help_cloth_charity.jpeg'],
     date: new Date('2024-03-15').toISOString(),

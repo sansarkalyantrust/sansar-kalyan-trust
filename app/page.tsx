@@ -9,10 +9,10 @@ import { HomepageClient } from '@/components/homepage-client'
 
 export const metadata = {
   title: 'Sansar Kalyan Trust - NGO for Health, Education & Growth',
-  description: 'Sansar Kalyan Trust is dedicated to providing healthcare, education, and community support to underprivileged communities in India. Har Daan Ek Pehchaan.',
+  description: 'Sansar Kalyan Trust operates across health, nature, humanity, animal welfare, and education.',
   openGraph: {
-    title: 'Sansar Kalyan Trust - Har Daan Ek Pehchaan',
-    description: 'Empowering communities through education, health, and environment.',
+    title: 'Sansar Kalyan Trust',
+    description: 'Empowering Health • Protecting Nature • Serving Humanity • Voicing the Voiceless • Spreading Education',
     url: 'https://www.sansarkalyan.org',
     siteName: 'Sansar Kalyan Trust',
     locale: 'en_IN',

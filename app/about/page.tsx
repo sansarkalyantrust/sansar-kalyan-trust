@@ -2,8 +2,28 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { PageHero } from '@/components/page-hero'
 import { Card } from '@/components/ui/card'
-import { AboutMissionSection } from '@/components/about-mission-section'
-import { Heart, BookOpen, Sprout, Shield, Leaf, Users, MapPin } from 'lucide-react'
+import { GovernmentRecognitions } from '@/components/government-recognitions'
+import {
+  aboutParagraphs,
+  achievements,
+  contactDetails,
+  coreValues,
+  mainQuote,
+  missionAreas,
+} from '@/lib/site-content'
+import {
+  BookOpen,
+  GraduationCap,
+  HandHeart,
+  Heart,
+  HeartPulse,
+  Leaf,
+  MapPin,
+  PawPrint,
+} from 'lucide-react'
+
+const valueIcons = [HandHeart, BookOpen, Heart]
+const missionIcons = [HeartPulse, Leaf, HandHeart, PawPrint, GraduationCap]
 
 export default function About() {
   return (
@@ -14,44 +34,46 @@ export default function About() {
         <PageHero
           title="About Us"
           subtitle="Serving communities with compassion and purpose."
+          backgroundImage="/Activity-camp.jpeg"
         />
 
-        {/* Mission & Vision */}
-        <section className="w-full py-20 md:py-32 bg-card">
+        <section className="w-full py-20 md:py-28 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
-            <AboutMissionSection />
+            <div className="max-w-4xl mx-auto space-y-6 text-center">
+              {aboutParagraphs.map((paragraph) => (
+                <p key={paragraph} className="text-lg text-muted-foreground leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
+              <p className="text-xl font-semibold text-primary leading-relaxed">
+                {mainQuote}
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* Core Values */}
-        <section className="w-full py-20 md:py-32 bg-background">
+        <section className="w-full py-20 md:py-28 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-16">
+            <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Our Core Values
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { title: 'Compassion', desc: 'Empathy and genuine care for all communities we serve', icon: Heart },
-                { title: 'Education', desc: 'Foundation of lasting change and personal development', icon: BookOpen },
-                { title: 'Sustainability', desc: 'Long-term impact, not quick fixes or temporary solutions', icon: Sprout },
-                { title: 'Transparency', desc: 'Every donation accounted for with complete accountability', icon: Shield },
-                { title: 'Community', desc: 'Local communities lead their own transformation', icon: Users },
-                { title: 'Impact', desc: 'Measurable improvements in lives and livelihoods', icon: Leaf },
-              ].map((value, i) => {
-                const Icon = value.icon
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {coreValues.map((value, index) => {
+                const Icon = valueIcons[index]
                 return (
-                  <Card key={i} className="p-6 text-center hover:shadow-lg transition-shadow">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Card key={value.title} className="p-7 text-center">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-5">
                       <Icon className="h-6 w-6 text-primary" />
                     </div>
-                    <h3 className="text-lg font-bold text-foreground mb-2">
-                      {value.title}
+                    <p className="text-sm font-semibold text-primary mb-1">{value.title}</p>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">
+                      {value.subtitle}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {value.desc}
+                    <p className="text-muted-foreground leading-relaxed">
+                      {value.description}
                     </p>
                   </Card>
                 )
@@ -60,86 +82,61 @@ export default function About() {
           </div>
         </section>
 
-        {/* Founder Section */}
-        <section className="w-full py-20 md:py-32 bg-card">
+        <section className="w-full py-20 md:py-28 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-16">
+            <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Founder & Chairman
+                Our Mission
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div>
-                <img
-                  src="/founder_ShekharRana.jpeg"
-                  alt="Dr. Shekhar Rana, Founder & Chairman"
-                  className="rounded-lg shadow-lg object-cover w-full h-96"
-                />
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-3xl font-bold text-foreground">
-                    Dr. Shekhar Rana
-                  </h3>
-                  <p className="text-lg text-primary font-semibold">Founder & Chairman</p>
-                </div>
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  Dr. Shekhar Rana has organized 50+ health camps across Rohtak and neighboring districts, impacting thousands of families. His vision extends to tree plantation drives, free night street education programs, and cloth distribution initiatives that have touched countless lives.
-                </p>
-                <div className="p-4 border-l-4 border-primary bg-primary/5 rounded">
-                  <p className="text-lg font-italic text-primary">
-                    <em>&quot;Sewa hi sabse bada dharm hai.&quot;</em>
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-2">Service is the greatest virtue.</p>
-                </div>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+              {missionAreas.map((area, index) => {
+                const Icon = missionIcons[index]
+                return (
+                  <Card key={area.title} className="p-6">
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-5">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <p className="text-sm font-semibold text-primary mb-2">
+                      {index + 1}. {area.title}
+                    </p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {area.description}
+                    </p>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         </section>
 
-        {/* Journey Timeline */}
-        <section className="w-full py-20 md:py-32 bg-background">
+        <section className="w-full py-20 md:py-28 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-16">
+            <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Our Journey
+                Our Achievements
               </h2>
             </div>
-
-            <div className="space-y-8 max-w-3xl mx-auto">
-              {[
-                { year: '2019', title: 'Foundation', desc: 'Sansar Kalyan Trust founded in Rohtak by Dr. Shekhar Rana with a vision to serve communities.' },
-                { year: '2020', title: 'First Health Camp', desc: 'Organized first health camp serving 500+ families during challenging times.' },
-                { year: '2021', title: 'Free Night Education', desc: 'Launched free night street education program to support underprivileged children.' },
-                { year: '2022', title: 'Environment & Animal Care', desc: 'Planted 5,000+ trees and initiated street animal rescue programs across districts.' },
-                { year: '2023', title: 'Expanded Reach', desc: 'Expanded operations to 10+ villages with cloth and food distribution drives.' },
-                { year: '2024', title: 'Community Impact', desc: 'Engaging 1,000+ volunteers and running multiple impactful campaigns.' },
-              ].map((item, i) => (
-                <div key={i} className="flex gap-6">
-                  <div className="flex flex-col items-center">
-                    <div className="w-4 h-4 bg-primary rounded-full mt-2" />
-                    {i < 5 && <div className="w-1 h-24 bg-primary/20 mt-4" />}
-                  </div>
-                  <Card className="p-6 flex-1 hover:shadow-lg transition-shadow">
-                    <p className="text-lg font-bold text-primary">{item.year}</p>
-                    <h4 className="text-xl font-bold text-foreground mt-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-muted-foreground mt-2">
-                      {item.desc}
-                    </p>
-                  </Card>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {achievements.map((achievement) => (
+                <Card key={achievement.label} className="p-7 text-center">
+                  <p className="text-4xl font-bold text-primary mb-3">
+                    {achievement.value}
+                    {achievement.suffix}
+                  </p>
+                  <p className="text-muted-foreground">{achievement.label}</p>
+                </Card>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Where We Work */}
-        <section className="w-full py-20 md:py-32 bg-card">
+        <GovernmentRecognitions />
+
+        <section className="w-full py-20 md:py-28 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-16">
+            <div className="text-center mb-14">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Where We Work
               </h2>
@@ -154,9 +151,10 @@ export default function About() {
                       Sansar Kalyan Trust
                     </h3>
                     <p className="text-muted-foreground text-lg">
-                      House No 1239, First Floor<br />
-                      Sector 3, Rohtak<br />
-                      Haryana 124001, India
+                      {contactDetails.registeredAddress}
+                    </p>
+                    <p className="text-muted-foreground mt-2">
+                      Registration No.: {contactDetails.registrationNo}
                     </p>
                   </div>
                 </div>

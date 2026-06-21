@@ -1,14 +1,21 @@
 import bcryptjs from 'bcryptjs'
 import { connectDB } from './mongodb'
 import { User, Campaign, Event, Blog, Gallery, Testimonial, Settings } from './models'
+import {
+  aboutParagraphs,
+  achievements,
+  contactDetails,
+  englishTagline,
+  organizationName,
+} from './site-content'
 
 const defaultSettings = [
   {
     key: 'homepage_hero',
     value: {
-      title: 'Sansar Kalyan Trust',
-      subtitle: 'Har Daan Ek Pehchaan',
-      description: 'Empowering communities through education, health, and environment.',
+      title: organizationName,
+      subtitle: englishTagline,
+      description: aboutParagraphs.join(' '),
       ctaText: 'Donate Now',
       ctaLink: '/donate',
     },
@@ -16,26 +23,26 @@ const defaultSettings = [
   {
     key: 'impact_numbers',
     value: {
-      familiesHelped: 5000,
-      eventsOrganized: 150,
-      volunteersActive: 200,
-      donationsReceived: 1200000,
+      treesPlanted: achievements[0].value,
+      notebooksMade: achievements[1].value,
+      healthAwarenessCamps: achievements[2].value,
+      animalsProtected: achievements[3].value,
     },
   },
   {
     key: 'about_content',
     value: {
-      mission: 'To uplift underprivileged communities through accessible healthcare, quality education, and sustainable environmental initiatives.',
-      vision: 'A world where every individual has access to healthcare, education, and opportunities for growth regardless of their socio-economic background.',
-      description: 'Sansar Kalyan Trust is a registered non-profit organization working across India to bring positive change in communities through healthcare camps, free education programs, environmental conservation, and community welfare initiatives.',
+      mission: aboutParagraphs[1],
+      vision: aboutParagraphs[0],
+      description: aboutParagraphs.join(' '),
     },
   },
   {
     key: 'footer_data',
     value: {
-      address: 'Rohtak, Haryana, India',
-      phone: '+91 9999999999',
-      email: 'info@sansarkalyan.org',
+      address: contactDetails.registeredAddress,
+      phone: contactDetails.phone,
+      email: contactDetails.email,
       socialLinks: {
         facebook: 'https://facebook.com/sansarkalyantrust',
         instagram: 'https://instagram.com/sansarkalyantrust',
@@ -47,10 +54,12 @@ const defaultSettings = [
   {
     key: 'contact_info',
     value: {
-      address: 'Rohtak, Haryana, India',
-      phone: '+91 9999999999',
-      email: 'info@sansarkalyan.org',
-      officeHours: 'Mon-Sat: 9:00 AM - 6:00 PM',
+      address: contactDetails.registeredAddress,
+      phone: contactDetails.phone,
+      whatsapp: contactDetails.phone,
+      email: contactDetails.email,
+      registrationNo: contactDetails.registrationNo,
+      upi: contactDetails.upi,
     },
   },
 ]
@@ -126,12 +135,12 @@ const defaultCampaigns = [
     endDate: new Date('2025-03-31'),
   },
   {
-    slug: 'free-night-street-education',
-    title: 'Free Night Street Education',
-    description: 'Empowering underprivileged children through free education programs conducted in evening hours for those who work during the day.',
-    fullDescription: 'Our night education program provides free tutoring and skill development for children who cannot attend school during the day. We operate learning centers in multiple locations, offering basic literacy, numeracy, and life skills training to help break the cycle of poverty.',
-    image: '/school_camp.jpeg',
-    galleryImages: ['/school_camp2.jpeg', '/school_students_help.jpeg', '/gifts_students.jpeg'],
+    slug: 'spread-of-education',
+    title: 'Spread of Education',
+    description: 'To ensure no child goes without learning — distributing books, notebooks, stationery; making upcycled copies from old textbooks.',
+    fullDescription: 'To ensure no child goes without learning — distributing books, notebooks, stationery; making upcycled copies from old textbooks.',
+    image: '/gifts_students.jpeg',
+    galleryImages: ['/school_students_help.jpeg', '/gifts_students.jpeg'],
     goal: 200000,
     raised: 75000,
     donors: 200,
@@ -155,14 +164,14 @@ const defaultEvents = [
     status: 'upcoming',
   },
   {
-    slug: 'education-drive',
-    title: 'Free Night Education Drive',
-    description: 'Interactive learning session for underprivileged children with books, stationery, and refreshments provided.',
-    image: '/school_camp.jpeg',
-    images: ['/school_camp2.jpeg', '/gifts_students.jpeg'],
+    slug: 'education-outreach',
+    title: 'Education Outreach',
+    description: 'A volunteer displays APJ Kalam-inspired notebooks made for underprivileged students.',
+    image: '/gifts_students.jpeg',
+    images: ['/school_students_help.jpeg', '/gifts_students.jpeg'],
     date: new Date('2024-12-20'),
     time: '6:00 PM - 9:00 PM',
-    venue: 'Open Ground, Sector 5, Rohtak',
+    venue: 'Rohtak, Haryana',
     type: 'Education',
     status: 'upcoming',
   },
@@ -180,8 +189,8 @@ const defaultEvents = [
   },
   {
     slug: 'cloth-distribution-drive',
-    title: 'Winter Cloth Distribution',
-    description: '500+ families benefited from our cloth distribution drive. Warm clothes distributed to those in need.',
+    title: 'Clothes & Food Drive',
+    description: 'Children and families receive donated clothes and food during a community drive.',
     image: '/help_cloth_charity.jpeg',
     images: ['/Activity-cloth-help.jpeg', '/help_families.jpeg'],
     date: new Date('2024-03-15'),
@@ -194,10 +203,10 @@ const defaultEvents = [
 
 const defaultBlogs = [
   {
-    slug: 'health-camp-impact-story',
-    title: 'Health Camp Impact: 500+ Lives Touched',
-    description: 'Read how our health camps are bringing medical care to remote villages and changing lives.',
-    content: `Our recent health camp in Rohtak district touched over 500 lives in a single day. With a team of 15 doctors and 30 volunteers, we provided free medical checkups, distributed medicines, and organized health awareness sessions.\n\nThe camp focused on common health issues affecting rural populations including diabetes screening, blood pressure monitoring, eye checkups, and dental consultations. Many patients received their first professional medical consultation ever.\n\nKey Highlights:\n- 500+ patients examined\n- Free medicines distributed worth ₹2,00,000\n- 50 patients referred for specialist treatment\n- Health awareness materials distributed in Hindi\n\nWe are committed to organizing monthly health camps across different villages to ensure healthcare reaches every doorstep.`,
+    slug: 'swasth-samaj-sashakt-bharat',
+    title: 'SWASTH SAMAJ SASHAKT BHARAT',
+    description: '"When both humans and animals are healthy, society becomes truly strong."',
+    content: `Free Veterinary Health Camps in gaushalas and rural areas — consultation, treatment, vaccination & de-worming.\n\nFree Human Health Camps for rural and labour communities — free BP, sugar check-ups, doctor consultation, free medicine.`,
     image: '/medicine_camp.jpeg',
     category: 'Healthcare',
     tags: ['health camp', 'rural healthcare', 'community service'],
@@ -206,22 +215,22 @@ const defaultBlogs = [
     published: true,
   },
   {
-    slug: 'education-initiative-success',
-    title: 'Breaking Barriers: Night Education Success',
-    description: 'Stories of children who are now pursuing their dreams through our free night education program.',
-    content: `Our Free Night Education program has been transforming lives since its inception. Children who work during the day to support their families now have access to quality education in the evening hours.\n\nThis month, we celebrate the success of 30 students who appeared for their board examinations after preparing through our night school program. These students, aged 12-18, attend our classes from 6 PM to 9 PM daily.\n\nOur curriculum covers:\n- Basic literacy and numeracy\n- Hindi and English language skills\n- Mathematics and Science fundamentals\n- Computer basics\n- Life skills and personality development\n\nWe provide free books, stationery, and refreshments to all students. Our dedicated volunteer teachers ensure each child receives personalized attention.`,
-    image: '/school_camp.jpeg',
+    slug: 'spread-of-education',
+    title: 'Spread of Education',
+    description: 'To ensure no child goes without learning — distributing books, notebooks, stationery; making upcycled copies from old textbooks.',
+    content: `To ensure no child goes without learning — distributing books, notebooks, stationery; making upcycled copies from old textbooks.`,
+    image: '/gifts_students.jpeg',
     category: 'Education',
-    tags: ['education', 'night school', 'underprivileged children'],
+    tags: ['education', 'notebooks', 'underprivileged children'],
     author: 'Sansar Kalyan Trust',
     readTime: 5,
     published: true,
   },
   {
-    slug: 'environmental-conservation-drive',
-    title: 'Green Future: Our Tree Plantation Journey',
-    description: 'How our community is working together to plant 10,000 trees and create a sustainable environment.',
-    content: `Sansar Kalyan Trust has embarked on an ambitious mission to plant 10,000 trees across Haryana. Our environmental conservation drive brings together volunteers, school children, and community members to create a greener, healthier environment.\n\nSo far, we have planted over 3,000 trees including neem, peepal, mango, and ashoka varieties. Each planted tree is maintained by our volunteer network for the first year to ensure survival.\n\nOur Environmental Initiatives:\n- Tree plantation drives every month\n- Awareness workshops in schools\n- Plastic-free campaigns\n- Water conservation projects\n- Composting training for farmers\n\nJoin us in our next plantation drive and be part of the solution to climate change.`,
+    slug: 'protection-of-nature',
+    title: 'Protection of Nature',
+    description: 'To conserve the environment through tree plantation drives, awareness campaigns, and distributing saplings to schools and communities.',
+    content: `To conserve the environment through tree plantation drives, awareness campaigns, and distributing saplings to schools and communities.`,
     image: '/Activity-plants.jpeg',
     category: 'Environment',
     tags: ['tree plantation', 'environment', 'green initiative'],

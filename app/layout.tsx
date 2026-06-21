@@ -11,13 +11,13 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Sansar Kalyan Trust - NGO for Health, Education & Growth',
-  description: 'Sansar Kalyan Trust is dedicated to providing healthcare, education, and community support to underprivileged communities in India.',
+  description: 'Sansar Kalyan Trust operates across health, nature, humanity, animal welfare, and education.',
   generator: 'v0.app',
-  keywords: 'NGO, healthcare, education, community development, charity, India',
+  keywords: 'NGO, health, nature, humanity, animal welfare, education, Rohtak, Haryana',
   authors: [{ name: 'Sansar Kalyan Trust' }],
   openGraph: {
     title: 'Sansar Kalyan Trust',
-    description: 'Dedicated to health, education, and community development',
+    description: 'Empowering Health • Protecting Nature • Serving Humanity • Voicing the Voiceless • Spreading Education',
     url: 'https://www.sansarkalyan.org',
     siteName: 'Sansar Kalyan Trust',
     locale: 'en_IN',
