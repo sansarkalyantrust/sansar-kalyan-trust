@@ -19,7 +19,7 @@ export default function BlogPage() {
           subtitle="Stories, news, and impact from the field."
         />
 
-        <section className="w-full py-20 md:py-32 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
             <BlogList />
           </div>

@@ -37,7 +37,7 @@ export default function About() {
           backgroundImage="/Activity-camp.jpeg"
         />
 
-        <section className="w-full py-20 md:py-28 bg-card">
+        <section className="w-full py-12 md:py-16 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
             <div className="max-w-4xl mx-auto space-y-6 text-center">
               {aboutParagraphs.map((paragraph) => (
@@ -52,9 +52,9 @@ export default function About() {
           </div>
         </section>
 
-        <section className="w-full py-20 md:py-28 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Our Core Values
               </h2>
@@ -82,9 +82,9 @@ export default function About() {
           </div>
         </section>
 
-        <section className="w-full py-20 md:py-28 bg-card">
+        <section className="w-full py-12 md:py-16 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Our Mission
               </h2>
@@ -111,9 +111,9 @@ export default function About() {
           </div>
         </section>
 
-        <section className="w-full py-20 md:py-28 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Our Achievements
               </h2>
@@ -132,11 +132,11 @@ export default function About() {
           </div>
         </section>
 
-        <GovernmentRecognitions />
+        <GovernmentRecognitions className="bg-card" />
 
-        <section className="w-full py-20 md:py-28 bg-card">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Where We Work
               </h2>

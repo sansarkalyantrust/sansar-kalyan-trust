@@ -179,7 +179,7 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-card">
+      <section className="w-full py-12 md:py-16 bg-card">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -209,9 +209,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-background">
+      <section className="w-full py-12 md:py-16 bg-background">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Our Core Values
             </h2>
@@ -239,9 +239,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-card">
+      <section className="w-full py-12 md:py-16 bg-card">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Our Mission
             </h2>
@@ -268,9 +268,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-background">
+      <section className="w-full py-12 md:py-16 bg-background">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Our Key Programs
             </h2>
@@ -304,9 +304,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-green-600 dark:bg-green-800 text-white">
+      <section className="w-full py-12 md:py-16 bg-green-600 dark:bg-green-800 text-white">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Achievements</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -322,9 +322,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-card">
+      <section className="w-full py-12 md:py-16 bg-card">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Glimpses of Our Work
             </h2>
@@ -337,9 +337,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-background">
+      <section className="w-full py-12 md:py-16 bg-background">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               More from the Ground
             </h2>
@@ -352,9 +352,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-card">
+      <section className="w-full py-12 md:py-16 bg-card">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               How Can You Join Us
             </h2>
@@ -380,9 +380,9 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <section className="w-full py-20 md:py-28 bg-background">
+      <section className="w-full py-12 md:py-16 bg-background">
         <div className="container mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Contact & Donate
             </h2>
@@ -440,7 +440,7 @@ export function HomepageClient() {
         </div>
       </section>
 
-      <GovernmentRecognitions />
+      <GovernmentRecognitions className="bg-card" />
     </>
   )
 }

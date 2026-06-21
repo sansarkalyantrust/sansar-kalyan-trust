@@ -1,11 +1,12 @@
 import { Card } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { recognitionIntro, recognitions } from '@/lib/site-content'
 
-export function GovernmentRecognitions() {
+export function GovernmentRecognitions({ className }: { className?: string }) {
   return (
-    <section className="w-full py-20 md:py-28 bg-background">
+    <section className={cn("w-full py-12 md:py-16 bg-background", className)}>
       <div className="container mx-auto max-w-6xl px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Government Recognitions & Pledges
           </h2>

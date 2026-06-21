@@ -29,7 +29,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex min-h-20 lg:min-h-16 max-w-7xl items-center justify-between gap-4 px-4 py-2 lg:py-0">
+      <div className="container mx-auto flex min-h-20 xl:min-h-16 max-w-7xl items-center justify-between gap-4 px-4 py-2 xl:py-0">
         {/* Logo and Tagline */}
         <Link href="/" className="flex items-center gap-3 min-w-0">
           <img
@@ -41,12 +41,12 @@ export function Header() {
             <span className="font-bold text-primary text-base">
               Sansar Kalyan Trust
             </span>
-            <RotatingTagline className="text-[11px] leading-snug text-muted-foreground w-[12rem] sm:w-[22rem] lg:w-[18rem] xl:w-[28rem]" />
+            <RotatingTagline className="hidden md:grid text-[10.5px] leading-snug text-muted-foreground md:max-w-[22rem] lg:max-w-[18rem] xl:max-w-[24rem] w-full" />
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden xl:flex items-center gap-4 xl:gap-5 2xl:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -90,7 +90,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden text-foreground"
+            className="xl:hidden text-foreground"
           >
             {mobileMenuOpen ? (
               <X className="h-5 w-5" />
@@ -104,7 +104,7 @@ export function Header() {
 
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
-        <nav className="lg:hidden border-t border-border bg-background">
+        <nav className="xl:hidden border-t border-border bg-background">
           <div className="container mx-auto max-w-7xl px-4 py-4 space-y-2">
             {navLinks.map((link) => (
               <Link

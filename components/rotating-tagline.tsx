@@ -17,18 +17,18 @@ export function RotatingTagline({ className }: { className?: string }) {
   }, [taglines.length])
 
   return (
-    <span className={cn('relative block min-h-[2.6em]', className)}>
+    <div className={cn('grid grid-cols-1 grid-rows-1 min-w-0 w-full', className)}>
       {taglines.map((tagline, taglineIndex) => (
         <span
           key={tagline}
           className={cn(
-            'absolute inset-0 transition-opacity duration-700 ease-in-out',
-            taglineIndex === index ? 'opacity-100' : 'opacity-0'
+            'col-start-1 row-start-1 block w-full transition-opacity duration-700 ease-in-out',
+            taglineIndex === index ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
         >
           {tagline}
         </span>
       ))}
-    </span>
+    </div>
   )
 }

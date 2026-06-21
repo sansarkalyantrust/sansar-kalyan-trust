@@ -23,7 +23,7 @@ export default function Donate() {
           backgroundImage="/donation_scanner.jpeg"
         />
 
-        <section className="w-full py-20 md:py-28 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card className="p-8 space-y-5">
@@ -70,9 +70,9 @@ export default function Donate() {
           </div>
         </section>
 
-        <section className="w-full py-20 md:py-28 bg-card">
+        <section className="w-full py-12 md:py-16 bg-card">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Your Support Reaches These Programs
               </h2>
@@ -104,9 +104,9 @@ export default function Donate() {
           </div>
         </section>
 
-        <section className="w-full py-20 md:py-28 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 Contact & Donate
               </h2>

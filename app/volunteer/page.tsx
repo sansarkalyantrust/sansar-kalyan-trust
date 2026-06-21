@@ -19,7 +19,7 @@ export default function VolunteerPage() {
           subtitle="Join our team and serve your community."
         />
 
-        <section className="w-full py-20 md:py-32 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-2xl px-4">
             <VolunteerForm />
           </div>

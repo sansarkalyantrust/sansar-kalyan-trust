@@ -1,7 +1,7 @@
 export const organizationName = 'Sansar Kalyan Trust'
 
 export const sanskritTagline =
-  'स्वास्थ्यस्य सशक्तिकरणम् । प्रकृतेः संरक्षणम् । मानवसेवा परमधर्मः। निःशब्दप्राणिनां अधिकारः। शिक्षायाः प्रसारः ॥'
+  'स्वास्थ्यस्य सशक्तिकरणम् । प्रकृतेः संरक्षणम् । मानवसेवा परमधर्मः । निःशब्दप्राणिनां अधिकारः । शिक्षायाः प्रसारः ॥'
 
 export const englishTagline =
   'Empowering Health • Protecting Nature • Serving Humanity • Voicing the Voiceless • Spreading Education'

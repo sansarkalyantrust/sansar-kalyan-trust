@@ -23,7 +23,7 @@ export default function ContactPage() {
           backgroundImage="/Help_activity.jpeg"
         />
 
-        <section className="w-full py-20 md:py-28 bg-background">
+        <section className="w-full py-12 md:py-16 bg-background">
           <div className="container mx-auto max-w-6xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div className="space-y-6">
